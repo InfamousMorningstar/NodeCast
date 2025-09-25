@@ -1,3 +1,15 @@
+## ⚠️ Attribution Notice
+
+**This is NOT my original work.** This repository is a fork/copy of the original Zipline project for personal experimentation and learning purposes.
+
+**Original Author:** [diced](https://github.com/diced)  
+**Original Repository:** [https://github.com/diced/zipline](https://github.com/diced/zipline)  
+**License:** Please refer to the original repository for licensing terms.
+
+All credit goes to the original author and contributors. This copy exists solely for personal use and experimentation.
+
+---
+
 <div align="center">
   <img src="https://raw.githubusercontent.com/diced/zipline/trunk/public/zipline_small.png"/>
 
