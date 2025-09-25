@@ -185,7 +185,7 @@ export class ZFSVersioning {
           size: stats.size,
           checksum,
           userAction: (dbSnapshot?.reason as any) || 'auto',
-          description: dbSnapshot?.description,
+          description: dbSnapshot?.description || undefined,
           metadata: {
             userId: dbSnapshot?.userId || 'system',
             operation: 'modify',
