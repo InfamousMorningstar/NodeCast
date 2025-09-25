@@ -11,7 +11,6 @@ All credit goes to the original author and contributors. This copy exists solely
 ---
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/diced/zipline/trunk/public/zipline_small.png"/>
 
 # NodeCast
 **High-Performance File Server for TrueNAS Scale**  
