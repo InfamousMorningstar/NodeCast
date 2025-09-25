@@ -4,9 +4,9 @@
  */
 
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { createZFSVersioning } from '../../../../lib/zfs/versioning';
-import { log } from '../../../../lib/logger';
-import { prisma } from '../../../../lib/db';
+import { createZFSVersioning } from './versioning';
+import { log } from '../logger';
+import { prisma } from '../db';
 
 const logger = log('api:zfs:versioning');
 
@@ -36,10 +36,7 @@ export interface CompareVersionsRequest {
  * Create a ZFS snapshot
  * POST /api/zfs/snapshots
  */
-export async function createSnapshot(
-  req: FastifyRequest,
-  res: FastifyReply,
-) {
+export async function createSnapshot(req: FastifyRequest, res: FastifyReply) {
   try {
     const { reason = 'manual', description } = (req.body as CreateSnapshotRequest) || {};
     const userId = (req as any).user.id;
@@ -112,13 +109,13 @@ export async function listSnapshots(req: FastifyRequest, res: FastifyReply) {
 
     // Merge ZFS data with database metadata
     const enrichedSnapshots = result.data!.map((snapshot: any) => {
-      const dbData = dbSnapshots.find(db => db.name === snapshot.name);
+      const dbData = dbSnapshots.find((db) => db.name === snapshot.name);
       return {
         ...snapshot,
         id: dbData?.id,
         reason: dbData?.reason || 'unknown',
         description: dbData?.description,
-        isAutomatic: (dbData?.reason === 'auto' || dbData?.reason === 'scheduled') || false,
+        isAutomatic: dbData?.reason === 'auto' || dbData?.reason === 'scheduled' || false,
       };
     });
 
@@ -223,10 +220,7 @@ export async function restoreFile(req: FastifyRequest, res: FastifyReply) {
  * Compare file versions between snapshots
  * POST /api/zfs/files/compare
  */
-export async function compareVersions(
-  req: FastifyRequest,
-  res: FastifyReply,
-) {
+export async function compareVersions(req: FastifyRequest, res: FastifyReply) {
   try {
     const { filePath, fromSnapshot, toSnapshot } = req.body as CompareVersionsRequest;
     const userId = (req as any).user.id;

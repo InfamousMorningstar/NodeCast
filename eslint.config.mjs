@@ -62,7 +62,7 @@ export default tseslint.config(
         },
       ],
 
-      'linebreak-style': ['error', 'unix'],
+      'linebreak-style': 'off', // Disabled for Windows development
       quotes: [
         'error',
         'single',

@@ -3,6 +3,8 @@ import { SyncEngine, SyncStatus } from '../../../lib/sync/SyncEngine';
 import { userMiddleware } from '../../middleware/user';
 import { prisma } from '../../../lib/db';
 
+export const PATH = '/api/sync';
+
 export default async function syncRoutes(server: FastifyInstance) {
   const syncEngine = new SyncEngine(prisma, 8081);
 

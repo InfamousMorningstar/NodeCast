@@ -4,9 +4,11 @@
 
 import { FastifyInstance } from 'fastify';
 import { userMiddleware } from '../../../middleware/user';
-import { createSnapshot, listSnapshots, getFileVersions, restoreFile, compareVersions } from './versioning';
+import { createSnapshot, listSnapshots, getFileVersions, restoreFile, compareVersions } from '../../../../lib/zfs/routes';
 
-export async function zfsRoutes(fastify: FastifyInstance) {
+export const PATH = '/api/zfs';
+
+export default async function zfsRoutes(fastify: FastifyInstance) {
   // Snapshot management
   fastify.post('/snapshots', { preHandler: [userMiddleware] }, createSnapshot);
   fastify.get('/snapshots', { preHandler: [userMiddleware] }, listSnapshots);
