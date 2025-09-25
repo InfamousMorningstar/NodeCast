@@ -169,6 +169,11 @@ model User {
   oauthProviders OAuthProvider[]
   IncompleteFile IncompleteFile[]
   exports        Export[]
+  
+  // ZFS-related relations
+  zfsSnapshots   ZfsSnapshot[]
+  fileVersions   FileVersion[]
+  securityAudits SecurityAudit[]
 }
 
 model Export {
@@ -378,4 +383,107 @@ model Invite {
 
   inviter   User   @relation(fields: [inviterId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   inviterId String
+}
+
+// ZFS-related models for NodeCast enterprise features
+
+model ZfsSnapshot {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  dataset     String
+  createdAt   DateTime @default(now())
+  userId      String
+  reason      String   // 'manual', 'auto', 'scheduled'
+  description String?
+  size        BigInt   @default(0)
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("zfs_snapshots")
+}
+
+model FileVersion {
+  id           String   @id @default(cuid())
+  fileId       String
+  snapshotName String
+  action       String   // 'create', 'modify', 'delete', 'restore'
+  userId       String
+  timestamp    DateTime @default(now())
+  checksum     String?
+  size         BigInt?
+  metadata     Json?
+  
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("file_versions")
+}
+
+model SnapshotPolicy {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  dataset   String
+  frequency String   // 'hourly', 'daily', 'weekly', 'monthly'
+  retention Json     // JSON object with retention settings
+  enabled   Boolean  @default(true)
+  prefix    String   @default("nodecast")
+  skipEmpty Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("snapshot_policies")
+}
+
+model ZfsDataset {
+  id           String   @id @default(cuid())
+  name         String   @unique
+  mountpoint   String?
+  quota        BigInt?
+  used         BigInt   @default(0)
+  available    BigInt   @default(0)
+  compression  String   @default("lz4")
+  recordsize   Int      @default(1048576) // 1MB
+  encryption   String   @default("off")
+  dedup        String   @default("off")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Association with users/organizations
+  ownerId      String?
+  ownerType    String?  // 'user' or 'organization'
+  
+  @@map("zfs_datasets")
+}
+
+model PerformanceMetric {
+  id              String   @id @default(cuid())
+  timestamp       DateTime @default(now())
+  dataset         String?
+  readIOPS        Float    @default(0)
+  writeIOPS       Float    @default(0)
+  readThroughput  Float    @default(0)
+  writeThroughput Float    @default(0)
+  l2arcHitRatio   Float    @default(0)
+  arcHitRatio     Float    @default(0)
+  avgReadLatency  Float    @default(0)
+  avgWriteLatency Float    @default(0)
+  avgSyncLatency  Float    @default(0)
+  queueDepth      Float    @default(0)
+  
+  @@map("performance_metrics")
+}
+
+model SecurityAudit {
+  id        String   @id @default(cuid())
+  timestamp DateTime @default(now())
+  userId    String
+  action    String
+  dataset   String?
+  details   Json?
+  ipAddress String?
+  userAgent String?
+  risk      String   @default("low") // 'low', 'medium', 'high'
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("security_audits")
 }
