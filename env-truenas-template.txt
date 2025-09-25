@@ -1,0 +1,75 @@
+# NodeCast Environment Configuration for TrueNAS Scale
+# Copy this file to .env and customize the values
+# CONFIGURED FOR YOUR SYSTEM: app-pool (SSD) + Centauri (HDD) pools
+
+# =============================================================================
+# CONFIGURED: TrueNAS Scale Mount Paths
+# =============================================================================
+# These paths are configured for your specific TrueNAS Scale setup
+
+# Main upload storage (on HDD pool for bulk storage)
+UPLOADS_PATH=/mnt/Centauri/nodecast/uploads
+
+# Temporary file processing (on HDD pool)
+TEMP_PATH=/mnt/Centauri/nodecast/temp
+
+# Database storage (on SSD pool for performance)
+DB_DATA_PATH=/mnt/app-pool/nodecast/postgresql
+
+# Public assets and themes
+PUBLIC_PATH=/mnt/Centauri/nodecast/public
+THEMES_PATH=/mnt/app-pool/nodecast/themes
+CONFIG_PATH=/mnt/app-pool/nodecast/config
+
+# Redis cache data (on SSD pool for performance)
+REDIS_DATA_PATH=/mnt/app-pool/nodecast/redis
+
+# =============================================================================
+# CONFIGURED: ZFS Configuration
+# =============================================================================
+# Your ZFS dataset path (without /mnt prefix)
+ZFS_DATASET_PATH=Centauri/nodecast/uploads
+
+# =============================================================================
+# REQUIRED: Security Settings
+# =============================================================================
+# Generate a secure random string for this
+CORE_SECRET=your-super-secret-key-change-this-to-random-string
+
+# Database password
+POSTGRES_PASSWORD=your-secure-database-password
+
+# =============================================================================
+# CONFIGURED: Network Configuration
+# =============================================================================
+# Your TrueNAS Scale IP configured
+DOMAIN=192.168.1.113:3000
+
+# Set to true if using reverse proxy with SSL
+HTTPS_ENABLED=false
+
+# =============================================================================
+# OPTIONAL: Performance Tuning
+# =============================================================================
+# Maximum upload size
+MAX_UPLOAD_SIZE=1GB
+
+# Chunk size for large uploads
+CHUNK_SIZE=16MB
+
+# =============================================================================
+# CONFIGURED VALUES FOR YOUR SYSTEM:
+# =============================================================================
+# SSD Pool (app-pool): Database, Redis, Config, Themes
+# HDD Pool (Centauri): Uploads, Temp, Public
+# 
+# UPLOADS_PATH=/mnt/Centauri/nodecast/uploads
+# TEMP_PATH=/mnt/Centauri/nodecast/temp
+# PUBLIC_PATH=/mnt/Centauri/nodecast/public
+# DB_DATA_PATH=/mnt/app-pool/nodecast/postgresql
+# REDIS_DATA_PATH=/mnt/app-pool/nodecast/redis
+# THEMES_PATH=/mnt/app-pool/nodecast/themes
+# CONFIG_PATH=/mnt/app-pool/nodecast/config
+# ZFS_DATASET_PATH=Centauri/nodecast/uploads
+# DOMAIN=192.168.1.113:3000
+# DOMAIN=192.168.1.100:3000

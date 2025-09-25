@@ -1,18 +1,23 @@
-name: 'Push Docker Images'
+name: 'Build and Push NodeCast Docker Images'
 
 on:
   push:
-    branches: [v4, trunk]
+    branches: [trunk, main]
+    tags: ['v*']
   workflow_dispatch:
 
 jobs:
-  push:
+  build-and-push:
     strategy:
       matrix:
         arch: [amd64, arm64]
 
-    name: push
+    name: build-and-push-${{ matrix.arch }}
     runs-on: ubuntu-24.04${{ matrix.arch == 'arm64' && '-arm' || '' }}
+    permissions:
+      contents: read
+      packages: write
+      
     steps:
       - uses: actions/checkout@v4
 
@@ -22,35 +27,34 @@ jobs:
           echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       - uses: docker/setup-buildx-action@v3
+      
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - uses: docker/build-push-action@v6
         with:
           push: true
           platforms: linux/${{ matrix.arch }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=${{ matrix.arch }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.arch }}
           provenance: false
           build-args: |
-            ZIPLINE_GIT_SHA=${{ steps.sha.outputs.short_sha }}
+            NODECAST_GIT_SHA=${{ steps.sha.outputs.short_sha }}
           tags: |
-            ghcr.io/diced/zipline:trunk-${{ matrix.arch }}
-            ghcr.io/diced/zipline:trunk-${{ steps.sha.outputs.short_sha }}-${{ matrix.arch }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/zipline:trunk-${{ matrix.arch }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/zipline:trunk-${{ steps.sha.outputs.short_sha }}-${{ matrix.arch }}
+            ghcr.io/${{ github.repository_owner }}/nodecast:trunk-${{ matrix.arch }}
+            ghcr.io/${{ github.repository_owner }}/nodecast:trunk-${{ steps.sha.outputs.short_sha }}-${{ matrix.arch }}
+            ghcr.io/${{ github.repository_owner }}/nodecast:latest-${{ matrix.arch }}
 
-  amend-builds:
+  create-manifest:
     runs-on: ubuntu-24.04
-    needs: push
+    needs: build-and-push
+    permissions:
+      contents: read
+      packages: write
+      
     steps:
       - uses: actions/checkout@v4
       - name: Get commit sha
@@ -65,40 +69,29 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
       - name: pull images
         run: |
-          docker pull --platform=linux/amd64 ghcr.io/diced/zipline:trunk-${{ steps.sha.outputs.short_sha }}-amd64
-          docker pull --platform=linux/arm64 ghcr.io/diced/zipline:trunk-${{ steps.sha.outputs.short_sha }}-arm64
-          docker pull --platform=linux/amd64 ${{ secrets.DOCKERHUB_USERNAME }}/zipline:trunk-${{ steps.sha.outputs.short_sha }}-amd64
-          docker pull --platform=linux/arm64 ${{ secrets.DOCKERHUB_USERNAME }}/zipline:trunk-${{ steps.sha.outputs.short_sha }}-arm64
+          docker pull --platform=linux/amd64 ghcr.io/${{ github.repository_owner }}/nodecast:trunk-${{ steps.sha.outputs.short_sha }}-amd64
+          docker pull --platform=linux/arm64 ghcr.io/${{ github.repository_owner }}/nodecast:trunk-${{ steps.sha.outputs.short_sha }}-arm64
 
-      - name: create manifests
+      - name: create and push manifests
         run: |
-          docker manifest create ghcr.io/diced/zipline:trunk-${{ steps.sha.outputs.short_sha }} \
-            --amend ghcr.io/diced/zipline:trunk-${{ steps.sha.outputs.short_sha }}-amd64 \
-            --amend ghcr.io/diced/zipline:trunk-${{ steps.sha.outputs.short_sha }}-arm64 && \
-          docker manifest create ghcr.io/diced/zipline:trunk \
-            --amend ghcr.io/diced/zipline:trunk-${{ steps.sha.outputs.short_sha }}-amd64 \
-            --amend ghcr.io/diced/zipline:trunk-${{ steps.sha.outputs.short_sha }}-arm64
-          docker manifest create ghcr.io/diced/zipline:v4 \
-            --amend ghcr.io/diced/zipline:trunk-${{ steps.sha.outputs.short_sha }}-amd64 \
-            --amend ghcr.io/diced/zipline:trunk-${{ steps.sha.outputs.short_sha }}-arm64
-          docker manifest create ${{ secrets.DOCKERHUB_USERNAME }}/zipline:trunk \
-            --amend ${{ secrets.DOCKERHUB_USERNAME }}/zipline:trunk-${{ steps.sha.outputs.short_sha }}-amd64 \
-            --amend ${{ secrets.DOCKERHUB_USERNAME }}/zipline:trunk-${{ steps.sha.outputs.short_sha }}-arm64
-          docker manifest create ${{ secrets.DOCKERHUB_USERNAME }}/zipline:trunk-${{ steps.sha.outputs.short_sha }} \
-            --amend ${{ secrets.DOCKERHUB_USERNAME }}/zipline:trunk-${{ steps.sha.outputs.short_sha }}-amd64 \
-            --amend ${{ secrets.DOCKERHUB_USERNAME }}/zipline:trunk-${{ steps.sha.outputs.short_sha }}-arm64
-
-      - name: push manifests
-        run: |
-          docker manifest push ghcr.io/diced/zipline:trunk-${{ steps.sha.outputs.short_sha }}
-          docker manifest push ghcr.io/diced/zipline:trunk
-          docker manifest push ghcr.io/diced/zipline:v4
-          docker manifest push ${{ secrets.DOCKERHUB_USERNAME }}/zipline:trunk
-          docker manifest push ${{ secrets.DOCKERHUB_USERNAME }}/zipline:trunk-${{ steps.sha.outputs.short_sha }}
+          # Create multi-arch manifest for commit SHA
+          docker manifest create ghcr.io/${{ github.repository_owner }}/nodecast:trunk-${{ steps.sha.outputs.short_sha }} \
+            --amend ghcr.io/${{ github.repository_owner }}/nodecast:trunk-${{ steps.sha.outputs.short_sha }}-amd64 \
+            --amend ghcr.io/${{ github.repository_owner }}/nodecast:trunk-${{ steps.sha.outputs.short_sha }}-arm64
+          
+          # Create multi-arch manifest for trunk
+          docker manifest create ghcr.io/${{ github.repository_owner }}/nodecast:trunk \
+            --amend ghcr.io/${{ github.repository_owner }}/nodecast:trunk-${{ steps.sha.outputs.short_sha }}-amd64 \
+            --amend ghcr.io/${{ github.repository_owner }}/nodecast:trunk-${{ steps.sha.outputs.short_sha }}-arm64
+          
+          # Create multi-arch manifest for latest (only on main/trunk branch)
+          docker manifest create ghcr.io/${{ github.repository_owner }}/nodecast:latest \
+            --amend ghcr.io/${{ github.repository_owner }}/nodecast:latest-amd64 \
+            --amend ghcr.io/${{ github.repository_owner }}/nodecast:latest-arm64
+          
+          # Push all manifests
+          docker manifest push ghcr.io/${{ github.repository_owner }}/nodecast:trunk-${{ steps.sha.outputs.short_sha }}
+          docker manifest push ghcr.io/${{ github.repository_owner }}/nodecast:trunk
+          docker manifest push ghcr.io/${{ github.repository_owner }}/nodecast:latest
