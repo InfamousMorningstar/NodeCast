@@ -5,18 +5,11 @@
 
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { join, dirname, relative } from 'path';
+import { join, relative } from 'path';
 import { createHash } from 'crypto';
 import { readFile, stat, access } from 'fs/promises';
 import { log } from '../logger';
-import { 
-  ZFSSnapshot, 
-  FileVersion, 
-  FileDiff, 
-  SnapshotPolicy, 
-  ZFSOperationResult, 
-  ZFSCommand 
-} from './types';
+import { ZFSSnapshot, FileVersion, FileDiff, SnapshotPolicy, ZFSOperationResult, ZFSCommand } from './types';
 import { prisma } from '../db';
 
 const execAsync = promisify(exec);
@@ -36,16 +29,16 @@ export class ZFSVersioning {
    */
   private async executeZFSCommand(command: ZFSCommand): Promise<ZFSOperationResult> {
     const cmdString = `${command.sudo ? 'sudo ' : ''}zfs ${command.command} ${command.args.join(' ')}`;
-    
+
     try {
       logger.debug(`Executing ZFS command: ${cmdString}`);
       const { stdout, stderr } = await execAsync(cmdString);
-      
+
       return {
         success: true,
         stdout: stdout.trim(),
         stderr: stderr.trim(),
-        command: cmdString
+        command: cmdString,
       };
     } catch (error: any) {
       logger.error(`ZFS command failed: ${cmdString}`, error);
@@ -54,7 +47,7 @@ export class ZFSVersioning {
         error: error.message,
         command: cmdString,
         exitCode: error.code,
-        stderr: error.stderr
+        stderr: error.stderr,
       };
     }
   }
@@ -63,9 +56,9 @@ export class ZFSVersioning {
    * Create a ZFS snapshot with metadata
    */
   async createSnapshot(
-    userId: string, 
+    userId: string,
     reason: 'manual' | 'auto' | 'scheduled' = 'auto',
-    description?: string
+    description?: string,
   ): Promise<ZFSOperationResult<string>> {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const snapshotName = `${this.datasetPath}@nodecast-${reason}-${timestamp}`;
@@ -73,7 +66,7 @@ export class ZFSVersioning {
     const result = await this.executeZFSCommand({
       command: 'snapshot',
       args: [snapshotName],
-      sudo: true
+      sudo: true,
     });
 
     if (result.success) {
@@ -87,8 +80,8 @@ export class ZFSVersioning {
             userId,
             reason,
             description,
-            size: await this.getSnapshotSize(snapshotName)
-          }
+            size: await this.getSnapshotSize(snapshotName),
+          },
         });
 
         logger.info(`Created ZFS snapshot: ${snapshotName}`);
@@ -99,7 +92,7 @@ export class ZFSVersioning {
         return {
           success: true,
           data: snapshotName,
-          error: `Snapshot created but metadata storage failed: ${dbError.message}`
+          error: `Snapshot created but metadata storage failed: ${dbError.message}`,
         };
       }
     }
@@ -114,7 +107,7 @@ export class ZFSVersioning {
     const result = await this.executeZFSCommand({
       command: 'list',
       args: ['-t', 'snapshot', '-H', '-p', '-o', 'name,creation,used,referenced,clones', this.datasetPath],
-      sudo: false
+      sudo: false,
     });
 
     if (!result.success) {
@@ -122,10 +115,10 @@ export class ZFSVersioning {
     }
 
     try {
-      const snapshots: ZFSSnapshot[] = result.stdout!
-        .split('\n')
-        .filter(line => line.trim())
-        .map(line => {
+      const snapshots: ZFSSnapshot[] = result
+        .stdout!.split('\n')
+        .filter((line) => line.trim())
+        .map((line) => {
           const [name, creation, used, referenced, clones] = line.split('\t');
           return {
             name,
@@ -136,7 +129,7 @@ export class ZFSVersioning {
             clones: clones ? clones.split(',') : [],
             defer_destroy: false,
             userRefCount: 0,
-            written: 0
+            written: 0,
           };
         });
 
@@ -144,7 +137,7 @@ export class ZFSVersioning {
     } catch (parseError: any) {
       return {
         success: false,
-        error: `Failed to parse snapshot list: ${parseError.message}`
+        error: `Failed to parse snapshot list: ${parseError.message}`,
       };
     }
   }
@@ -168,20 +161,20 @@ export class ZFSVersioning {
           this.mountPoint,
           '.zfs/snapshot',
           snapshot.name.split('@')[1],
-          relativePath
+          relativePath,
         );
 
         // Check if file exists in this snapshot
         await access(snapshotFilePath);
         const stats = await stat(snapshotFilePath);
-        
+
         // Calculate file checksum
         const content = await readFile(snapshotFilePath);
         const checksum = createHash('sha256').update(content).digest('hex');
 
         // Get metadata from database
         const dbSnapshot = await prisma.zfsSnapshot.findUnique({
-          where: { name: snapshot.name }
+          where: { name: snapshot.name },
         });
 
         versions.push({
@@ -195,8 +188,8 @@ export class ZFSVersioning {
           description: dbSnapshot?.description,
           metadata: {
             userId: dbSnapshot?.userId || 'system',
-            operation: 'modify'
-          }
+            operation: 'modify',
+          },
         });
       } catch (error) {
         // File doesn't exist in this snapshot, skip
@@ -211,17 +204,12 @@ export class ZFSVersioning {
    * Restore a file from a specific snapshot
    */
   async restoreFileFromSnapshot(
-    filePath: string, 
+    filePath: string,
     snapshotName: string,
-    userId: string
+    userId: string,
   ): Promise<ZFSOperationResult<void>> {
     const relativePath = relative(this.mountPoint, filePath);
-    const snapshotFilePath = join(
-      this.mountPoint,
-      '.zfs/snapshot',
-      snapshotName.split('@')[1],
-      relativePath
-    );
+    const snapshotFilePath = join(this.mountPoint, '.zfs/snapshot', snapshotName.split('@')[1], relativePath);
 
     try {
       // Verify snapshot file exists
@@ -234,7 +222,7 @@ export class ZFSVersioning {
       const result = await this.executeZFSCommand({
         command: 'send',
         args: [snapshotName],
-        sudo: true
+        sudo: true,
       });
 
       if (!result.success) {
@@ -248,17 +236,16 @@ export class ZFSVersioning {
           snapshotName,
           action: 'restore',
           userId,
-          timestamp: new Date()
-        }
+          timestamp: new Date(),
+        },
       });
 
       logger.info(`Restored file ${filePath} from snapshot ${snapshotName}`);
       return { success: true };
-
     } catch (error: any) {
       return {
         success: false,
-        error: `Failed to restore file: ${error.message}`
+        error: `Failed to restore file: ${error.message}`,
       };
     }
   }
@@ -269,29 +256,16 @@ export class ZFSVersioning {
   async compareFileVersions(
     filePath: string,
     fromSnapshot: string,
-    toSnapshot: string
+    toSnapshot: string,
   ): Promise<ZFSOperationResult<FileDiff>> {
     const relativePath = relative(this.mountPoint, filePath);
 
     try {
-      const fromPath = join(
-        this.mountPoint,
-        '.zfs/snapshot',
-        fromSnapshot.split('@')[1],
-        relativePath
-      );
+      const fromPath = join(this.mountPoint, '.zfs/snapshot', fromSnapshot.split('@')[1], relativePath);
 
-      const toPath = join(
-        this.mountPoint,
-        '.zfs/snapshot',
-        toSnapshot.split('@')[1],
-        relativePath
-      );
+      const toPath = join(this.mountPoint, '.zfs/snapshot', toSnapshot.split('@')[1], relativePath);
 
-      const [fromContent, toContent] = await Promise.all([
-        readFile(fromPath),
-        readFile(toPath)
-      ]);
+      const [fromContent, toContent] = await Promise.all([readFile(fromPath), readFile(toPath)]);
 
       // Simple diff implementation - in production, use a proper diff library
       const changes: FileDiff['changes'] = [];
@@ -303,7 +277,7 @@ export class ZFSVersioning {
           type: 'modified',
           offset: 0,
           length: toContent.length,
-          content: toContent
+          content: toContent,
         });
       }
 
@@ -314,14 +288,13 @@ export class ZFSVersioning {
           fromVersion: fromSnapshot,
           toVersion: toSnapshot,
           changes,
-          similarity
-        }
+          similarity,
+        },
       };
-
     } catch (error: any) {
       return {
         success: false,
-        error: `Failed to compare file versions: ${error.message}`
+        error: `Failed to compare file versions: ${error.message}`,
       };
     }
   }
@@ -339,17 +312,16 @@ export class ZFSVersioning {
           retention: JSON.stringify(policy.retention),
           enabled: policy.enabled,
           prefix: policy.prefix,
-          skipEmpty: policy.skipEmpty
-        }
+          skipEmpty: policy.skipEmpty,
+        },
       });
 
       logger.info(`Created snapshot policy: ${policy.name}`);
       return { success: true };
-
     } catch (error: any) {
       return {
         success: false,
-        error: `Failed to create snapshot policy: ${error.message}`
+        error: `Failed to create snapshot policy: ${error.message}`,
       };
     }
   }
@@ -364,7 +336,7 @@ export class ZFSVersioning {
     }
 
     const snapshots = snapshotsResult.data
-      .filter(s => s.name.includes(policy.prefix))
+      .filter((s) => s.name.includes(policy.prefix))
       .sort((a, b) => b.creation.getTime() - a.creation.getTime());
 
     const toDelete: string[] = [];
@@ -396,15 +368,17 @@ export class ZFSVersioning {
       const result = await this.executeZFSCommand({
         command: 'destroy',
         args: [snapshotName],
-        sudo: true
+        sudo: true,
       });
 
       if (result.success) {
         deletedCount++;
         // Remove from database
-        await prisma.zfsSnapshot.delete({
-          where: { name: snapshotName }
-        }).catch(() => {}); // Ignore database errors
+        await prisma.zfsSnapshot
+          .delete({
+            where: { name: snapshotName },
+          })
+          .catch(() => {}); // Ignore database errors
       }
     }
 
@@ -419,7 +393,7 @@ export class ZFSVersioning {
     const result = await this.executeZFSCommand({
       command: 'list',
       args: ['-H', '-p', '-o', 'used', snapshotName],
-      sudo: false
+      sudo: false,
     });
 
     if (result.success && result.stdout) {
@@ -435,9 +409,9 @@ export class ZFSVersioning {
   private calculateSimilarity(buffer1: Buffer, buffer2: Buffer): number {
     const minLength = Math.min(buffer1.length, buffer2.length);
     const maxLength = Math.max(buffer1.length, buffer2.length);
-    
+
     if (maxLength === 0) return 1.0;
-    
+
     let matches = 0;
     for (let i = 0; i < minLength; i++) {
       if (buffer1[i] === buffer2[i]) {
@@ -461,5 +435,5 @@ export function createZFSVersioning(datasetPath: string, mountPoint: string): ZF
  */
 export const zfsVersioning = createZFSVersioning(
   process.env.ZFS_DATASET_PATH || 'pool/nodecast/uploads',
-  process.env.DATASOURCE_LOCAL_DIRECTORY || '/nodecast/uploads'
+  process.env.DATASOURCE_LOCAL_DIRECTORY || '/nodecast/uploads',
 );

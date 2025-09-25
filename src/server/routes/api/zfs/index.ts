@@ -4,13 +4,7 @@
 
 import { FastifyInstance } from 'fastify';
 import { userMiddleware } from '../../../middleware/user';
-import { 
-  createSnapshot, 
-  listSnapshots, 
-  getFileVersions, 
-  restoreFile, 
-  compareVersions 
-} from './versioning';
+import { createSnapshot, listSnapshots, getFileVersions, restoreFile, compareVersions } from './versioning';
 
 export async function zfsRoutes(fastify: FastifyInstance) {
   // Snapshot management

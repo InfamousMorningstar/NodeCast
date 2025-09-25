@@ -29,7 +29,15 @@ export interface ZFSDataset {
   recordsize: number;
   compression: 'off' | 'lz4' | 'gzip' | 'gzip-1' | 'gzip-9' | 'zstd';
   dedup: 'off' | 'on' | 'verify' | 'sha256' | 'sha512' | 'skein';
-  encryption: 'off' | 'on' | 'aes-128-ccm' | 'aes-192-ccm' | 'aes-256-ccm' | 'aes-128-gcm' | 'aes-192-gcm' | 'aes-256-gcm';
+  encryption:
+    | 'off'
+    | 'on'
+    | 'aes-128-ccm'
+    | 'aes-192-ccm'
+    | 'aes-256-ccm'
+    | 'aes-128-gcm'
+    | 'aes-192-gcm'
+    | 'aes-256-gcm';
   keystatus?: 'none' | 'unavailable' | 'available';
   keyformat?: 'none' | 'raw' | 'hex' | 'passphrase';
 }
