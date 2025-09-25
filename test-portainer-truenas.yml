@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # Test with simple web server first
+  test-nodecast:
+    image: nginx:alpine
+    container_name: nodecast-test
+    restart: unless-stopped
+    user: "568:568"
+    ports:
+      - "3000:80"
+    volumes:
+      - /mnt/Centauri/nodecast/uploads:/usr/share/nginx/html:ro
+      - /mnt/app-pool/nodecast/config:/etc/nginx/conf.d:ro
+    networks:
+      - nodecast-network
+
+  postgresql:
+    image: postgres:16
+    container_name: nodecast-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: nodecast
+      POSTGRES_PASSWORD: nodecast_secure_password
+      POSTGRES_DB: nodecast
+    volumes:
+      - /mnt/app-pool/nodecast/postgresql:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'nodecast']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nodecast-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: nodecast-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - /mnt/app-pool/nodecast/redis:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    networks:
+      - nodecast-network
+
+networks:
+  nodecast-network:
+    driver: bridge
+    name: nodecast-network

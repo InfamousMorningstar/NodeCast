@@ -1,97 +1,56 @@
-name: 'Build and Push NodeCast Docker Images'
+name: 'Build and Push NodeCast Docker Image'
 
 on:
   push:
     branches: [trunk, main]
-    tags: ['v*']
   workflow_dispatch:
 
 jobs:
   build-and-push:
-    strategy:
-      matrix:
-        arch: [amd64, arm64]
-
-    name: build-and-push-${{ matrix.arch }}
-    runs-on: ubuntu-24.04${{ matrix.arch == 'arm64' && '-arm' || '' }}
+    name: build-and-push
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
       
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Get commit sha
         id: sha
         run: |
           echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-      - uses: docker/setup-buildx-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
       
-      - uses: docker/login-action@v3
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: docker/build-push-action@v6
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
         with:
+          images: ghcr.io/${{ github.repository_owner }}/nodecast
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch
+            type=sha,prefix={{branch}}-
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
           push: true
-          platforms: linux/${{ matrix.arch }}
-          cache-from: type=gha,scope=${{ matrix.arch }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.arch }}
-          provenance: false
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             NODECAST_GIT_SHA=${{ steps.sha.outputs.short_sha }}
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/nodecast:trunk-${{ matrix.arch }}
-            ghcr.io/${{ github.repository_owner }}/nodecast:trunk-${{ steps.sha.outputs.short_sha }}-${{ matrix.arch }}
-            ghcr.io/${{ github.repository_owner }}/nodecast:latest-${{ matrix.arch }}
-
-  create-manifest:
-    runs-on: ubuntu-24.04
-    needs: build-and-push
-    permissions:
-      contents: read
-      packages: write
-      
-    steps:
-      - uses: actions/checkout@v4
-      - name: Get commit sha
-        id: sha
-        run: |
-          echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: pull images
-        run: |
-          docker pull --platform=linux/amd64 ghcr.io/${{ github.repository_owner }}/nodecast:trunk-${{ steps.sha.outputs.short_sha }}-amd64
-          docker pull --platform=linux/arm64 ghcr.io/${{ github.repository_owner }}/nodecast:trunk-${{ steps.sha.outputs.short_sha }}-arm64
-
-      - name: create and push manifests
-        run: |
-          # Create multi-arch manifest for commit SHA
-          docker manifest create ghcr.io/${{ github.repository_owner }}/nodecast:trunk-${{ steps.sha.outputs.short_sha }} \
-            --amend ghcr.io/${{ github.repository_owner }}/nodecast:trunk-${{ steps.sha.outputs.short_sha }}-amd64 \
-            --amend ghcr.io/${{ github.repository_owner }}/nodecast:trunk-${{ steps.sha.outputs.short_sha }}-arm64
-          
-          # Create multi-arch manifest for trunk
-          docker manifest create ghcr.io/${{ github.repository_owner }}/nodecast:trunk \
-            --amend ghcr.io/${{ github.repository_owner }}/nodecast:trunk-${{ steps.sha.outputs.short_sha }}-amd64 \
-            --amend ghcr.io/${{ github.repository_owner }}/nodecast:trunk-${{ steps.sha.outputs.short_sha }}-arm64
-          
-          # Create multi-arch manifest for latest (only on main/trunk branch)
-          docker manifest create ghcr.io/${{ github.repository_owner }}/nodecast:latest \
-            --amend ghcr.io/${{ github.repository_owner }}/nodecast:latest-amd64 \
-            --amend ghcr.io/${{ github.repository_owner }}/nodecast:latest-arm64
-          
-          # Push all manifests
-          docker manifest push ghcr.io/${{ github.repository_owner }}/nodecast:trunk-${{ steps.sha.outputs.short_sha }}
-          docker manifest push ghcr.io/${{ github.repository_owner }}/nodecast:trunk
-          docker manifest push ghcr.io/${{ github.repository_owner }}/nodecast:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

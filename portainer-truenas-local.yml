@@ -23,9 +23,9 @@ services:
     networks:
       - nodecast-network
 
-  # NodeCast Application
+  # NodeCast Application - LOCAL BUILD
   nodecast:
-    image: ghcr.io/infamousmorningstar/nodecast:latest  # Will need to be built and pushed
+    image: nodecast:local  # Built locally on TrueNAS Scale
     container_name: nodecast-app
     restart: unless-stopped
     user: "568:568"  # Run as standard container user

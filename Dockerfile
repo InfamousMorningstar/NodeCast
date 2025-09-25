@@ -42,15 +42,15 @@ COPY vite-env.d.ts ./vite-env.d.ts
 COPY scripts ./scripts
 
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODECAST_BUILD=true
+ENV ZIPLINE_BUILD=true
 
 RUN ZIPLINE_BUILD=true pnpm run build
 
 FROM base
 
-# Create nodecast user for security
-RUN addgroup -g 1000 nodecast && \
-    adduser -D -s /bin/sh -u 1000 -G nodecast nodecast
+# Create nodecast user for security (568:568 - standard container user)
+RUN addgroup -g 568 nodecast && \
+    adduser -D -s /bin/sh -u 568 -G nodecast nodecast
 
 COPY --from=deps /nodecast/node_modules ./node_modules
 
