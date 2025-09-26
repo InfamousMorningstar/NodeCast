@@ -1,0 +1,417 @@
+version: '3.8'
+
+# NodeCast Production Stack for Portainer on TrueNAS Scale
+# DevOps-hardened configuration with proper error handling, monitoring, and secrets management
+
+services:
+  # PostgreSQL Database - Primary data store
+  postgresql:
+    image: postgres:16-alpine
+    container_name: nodecast-postgres
+    hostname: nodecast-postgres
+    restart: unless-stopped
+    
+    environment:
+      POSTGRES_USER: nodecast
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      POSTGRES_DB: nodecast
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=C --lc-ctype=C"
+      # Performance tuning
+      POSTGRES_SHARED_BUFFERS: 256MB
+      POSTGRES_EFFECTIVE_CACHE_SIZE: 1GB
+      POSTGRES_MAINTENANCE_WORK_MEM: 64MB
+    
+    volumes:
+      # Database storage on fast SSD pool
+      - /mnt/app-pool/nodecast/postgresql:/var/lib/postgresql/data:Z
+      # Custom PostgreSQL configuration
+      - /mnt/app-pool/nodecast/config/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+      # Init scripts for first-time setup
+      - /mnt/app-pool/nodecast/config/init-scripts:/docker-entrypoint-initdb.d:ro
+    
+    ports:
+      - "127.0.0.1:5432:5432"  # Bind to localhost only for security
+    
+    # Resource limits - prevent runaway processes
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.2'
+          memory: 256M
+    
+    # Comprehensive health check
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U nodecast -d nodecast || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+        labels: "service=postgresql"
+    
+    networks:
+      - nodecast-internal
+    
+    secrets:
+      - postgres_password
+    
+    # Security settings
+    security_opt:
+      - no-new-privileges:true
+    
+    # PostgreSQL-specific settings
+    command: >
+      postgres
+      -c shared_buffers=256MB
+      -c effective_cache_size=1GB
+      -c maintenance_work_mem=64MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+      -c work_mem=4MB
+      -c min_wal_size=1GB
+      -c max_wal_size=4GB
+      -c max_connections=100
+      -c log_destination=stderr
+      -c log_statement=error
+      -c log_min_duration_statement=1000
+
+  # Redis Cache - Session management and caching
+  redis:
+    image: redis:7-alpine
+    container_name: nodecast-redis
+    hostname: nodecast-redis
+    restart: unless-stopped
+    
+    ports:
+      - "127.0.0.1:6379:6379"  # Localhost only
+    
+    volumes:
+      - /mnt/app-pool/nodecast/redis:/data:Z
+      - /mnt/app-pool/nodecast/config/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+    
+    # Health check
+    healthcheck:
+      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
+        labels: "service=redis"
+    
+    networks:
+      - nodecast-internal
+    
+    security_opt:
+      - no-new-privileges:true
+    
+    # Redis configuration for production
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 200mb
+      --maxmemory-policy allkeys-lru
+      --save 900 1
+      --save 300 10
+      --save 60 10000
+      --tcp-backlog 511
+      --timeout 0
+      --tcp-keepalive 300
+
+  # NodeCast Application - Main service
+  nodecast:
+    image: ghcr.io/infamousmorningstar/nodecast:latest  # Use GitHub Container Registry
+    container_name: nodecast-app
+    hostname: nodecast-app
+    restart: unless-stopped
+    
+    # Run as non-root user (TrueNAS Scale compatible)
+    user: "568:568"
+    
+    ports:
+      - "3000:3000"      # Web interface
+      - "8081:8081"      # WebSocket sync engine
+    
+    environment:
+      # Core Configuration
+      NODE_ENV: production
+      NODE_OPTIONS: "--max-old-space-size=1024"
+      CORE_PORT: 3000
+      CORE_HOSTNAME: 0.0.0.0
+      CORE_SECRET_FILE: /run/secrets/nodecast_secret
+      
+      # Database Configuration  
+      DATABASE_URL_FILE: /run/secrets/database_url
+      
+      # Storage Configuration
+      DATASOURCE_TYPE: local
+      DATASOURCE_LOCAL_DIRECTORY: /nodecast/uploads
+      CORE_TEMP_DIRECTORY: /nodecast/temp
+      
+      # TrueNAS Scale ZFS Integration
+      ZFS_ENABLED: true
+      ZFS_DATASET_PATH: Centauri/nodecast/uploads
+      ZFS_SNAPSHOT_ENABLED: true
+      ZFS_COMPRESSION_ENABLED: true
+      ZFS_DEDUP_ENABLED: false  # Usually not recommended for file servers
+      
+      # Network Configuration
+      CORE_DEFAULT_DOMAIN: ${NODECAST_DOMAIN:-localhost:3000}
+      CORE_RETURN_HTTPS_URLS: ${HTTPS_ENABLED:-false}
+      
+      # Feature Flags
+      FEATURES_USER_REGISTRATION: true
+      FEATURES_IMAGE_COMPRESSION: true
+      FEATURES_THUMBNAILS_ENABLED: true
+      FEATURES_ADVANCED_FILE_MANAGEMENT: true
+      FEATURES_REAL_TIME_SYNC: true
+      FEATURES_ZFS_VERSIONING: true
+      FEATURES_METRICS_ENABLED: true
+      FEATURES_HEALTH_CHECKS: true
+      
+      # Upload Configuration
+      UPLOADS_MAX_SIZE: ${MAX_UPLOAD_SIZE:-1GB}
+      UPLOADS_CHUNK_SIZE: ${CHUNK_SIZE:-16MB}
+      CHUNKS_ENABLED: true
+      CHUNKS_MAX: ${CHUNKS_MAX:-5GB}
+      
+      # Performance Tuning
+      THUMBNAILS_MAX_WORKERS: 4
+      SYNC_ENGINE_PORT: 8081
+      COMPRESSION_LEVEL: 6
+      
+      # Redis Integration
+      REDIS_URL: redis://redis:6379
+      
+      # Website Branding
+      WEBSITE_TITLE: "NodeCast - Enterprise File Server"
+      WEBSITE_DESCRIPTION: "High-Performance ZFS-Optimized File Sharing"
+      
+      # Security
+      SECURITY_TRUSTED_PROXIES: ${TRUSTED_PROXIES:-}
+      SECURITY_RATE_LIMIT_ENABLED: true
+      
+      # Monitoring
+      METRICS_ENABLED: true
+      HEALTH_CHECK_ENDPOINT: /api/healthcheck
+      
+      # Logging
+      DEBUG: ${DEBUG_LEVEL:-nodecast:error}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    
+    volumes:
+      # Primary file storage (HDD pool - bulk storage)
+      - /mnt/Centauri/nodecast/uploads:/nodecast/uploads:Z
+      - /mnt/Centauri/nodecast/temp:/nodecast/temp:Z
+      - /mnt/Centauri/nodecast/public:/nodecast/public:Z
+      
+      # Configuration and themes (SSD pool - fast access)
+      - /mnt/app-pool/nodecast/themes:/nodecast/themes:Z
+      - /mnt/app-pool/nodecast/config:/nodecast/config:Z
+      - /mnt/app-pool/nodecast/logs:/nodecast/logs:Z
+      
+      # TrueNAS Scale ZFS integration (read-only access to host tools)
+      - /sbin/zfs:/usr/local/bin/zfs:ro
+      - /sbin/zpool:/usr/local/bin/zpool:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      
+      # Timezone
+      - /etc/localtime:/etc/localtime:ro
+    
+    # Resource limits - prevent resource exhaustion
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    
+    # Comprehensive health check
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:3000/api/healthcheck || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    
+    # Advanced logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+        labels: "service=nodecast,component=main"
+    
+    networks:
+      - nodecast-internal
+      - nodecast-external
+    
+    secrets:
+      - nodecast_secret
+      - database_url
+    
+    # Security hardening
+    security_opt:
+      - no-new-privileges:true
+    
+    # Required for ZFS operations on TrueNAS Scale
+    privileged: false  # We'll use capabilities instead for better security
+    cap_add:
+      - SYS_ADMIN    # Required for ZFS operations
+      - DAC_OVERRIDE # File system permissions
+    
+    devices:
+      - /dev/zfs:/dev/zfs  # ZFS device access
+    
+    # Dependency management
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # Nginx Reverse Proxy - Optional but recommended for production
+  nginx:
+    image: nginx:alpine
+    container_name: nodecast-nginx
+    hostname: nodecast-nginx
+    restart: unless-stopped
+    
+    ports:
+      - "80:80"
+      - "443:443"
+    
+    volumes:
+      - /mnt/app-pool/nodecast/config/nginx:/etc/nginx/conf.d:ro
+      - /mnt/app-pool/nodecast/ssl:/etc/nginx/ssl:ro
+      - /mnt/app-pool/nodecast/logs/nginx:/var/log/nginx:Z
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
+        reservations:
+          cpus: '0.1'
+          memory: 32M
+    
+    # Health check
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '--spider', 'http://localhost/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+        labels: "service=nginx"
+    
+    networks:
+      - nodecast-external
+    
+    security_opt:
+      - no-new-privileges:true
+    
+    depends_on:
+      - nodecast
+
+# Network Configuration
+networks:
+  nodecast-internal:
+    driver: bridge
+    name: nodecast-internal
+    internal: true  # No external access for internal services
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/24
+  
+  nodecast-external:
+    driver: bridge
+    name: nodecast-external
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.21.0.0/24
+
+# Secrets Management - Use Portainer's secrets or Docker secrets
+secrets:
+  postgres_password:
+    external: true
+    name: nodecast_postgres_password
+  
+  nodecast_secret:
+    external: true
+    name: nodecast_core_secret
+  
+  database_url:
+    external: true
+    name: nodecast_database_url
+
+# Named volumes for data that doesn't need host mounts
+volumes:
+  nodecast-prometheus-data:
+    name: nodecast-prometheus-data
+  
+  nodecast-grafana-data:
+    name: nodecast-grafana-data
+
+# Health check service for external monitoring
+x-healthcheck-defaults: &healthcheck-defaults
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 40s
+
+# Resource defaults
+x-resource-defaults: &resource-defaults
+  deploy:
+    resources:
+      limits:
+        cpus: '0.5'
+        memory: 256M
+      reservations:
+        cpus: '0.1'
+        memory: 64M
+
+# Logging defaults
+x-logging-defaults: &logging-defaults
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "50m"
+      max-file: "3"

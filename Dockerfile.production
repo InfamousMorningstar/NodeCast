@@ -1,0 +1,165 @@
+# Multi-stage Dockerfile optimized for TrueNAS Scale deployment
+# Production-ready with security hardening and ZFS support
+
+# Build stage - Development dependencies
+FROM node:22-alpine AS builder
+
+# Install build dependencies and tools
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    git \
+    && rm -rf /var/cache/apk/*
+
+# Enable pnpm
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
+WORKDIR /build
+
+# Copy dependency files first for better layer caching
+COPY package.json pnpm-lock.yaml ./
+COPY pnpm-workspace.yaml ./
+COPY prisma ./prisma/
+
+# Install all dependencies (including dev dependencies for build)
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm install --frozen-lockfile
+
+# Copy source code and configuration
+COPY src ./src/
+COPY scripts ./scripts/
+COPY public ./public/
+COPY .gitignore ./
+COPY postcss.config.cjs ./
+COPY prettier.config.cjs ./
+COPY eslint.config.mjs ./
+COPY vite.config.ts ./
+COPY tsup.config.ts ./
+COPY tsconfig.json ./
+COPY mimes.json ./
+COPY code.json ./
+COPY vite-env.d.ts ./
+
+# Set build environment
+ENV NODE_ENV=production
+ENV NODECAST_BUILD=1
+
+# Build the application
+RUN pnpm run build:docker
+
+# Production stage - Minimal runtime
+FROM node:22-alpine AS production
+
+# Install runtime dependencies and security tools
+RUN apk add --no-cache \
+    # Core utilities
+    ca-certificates \
+    tzdata \
+    util-linux \
+    procps \
+    # Media processing
+    ffmpeg \
+    imagemagick \
+    # Network tools for health checks
+    wget \
+    curl \
+    # File system tools
+    file \
+    # Security tools
+    dumb-init \
+    # Clean up
+    && rm -rf /var/cache/apk/* \
+    && rm -rf /tmp/*
+
+# Create nodecast user and group (TrueNAS Scale compatible UIDs)
+RUN addgroup -g 568 -S nodecast && \
+    adduser -D -S -s /bin/sh -u 568 -G nodecast -h /nodecast nodecast
+
+# Enable pnpm for production
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
+# Set working directory
+WORKDIR /nodecast
+
+# Copy built application from builder stage
+COPY --from=builder --chown=nodecast:nodecast /build/build ./build/
+COPY --from=builder --chown=nodecast:nodecast /build/node_modules ./node_modules/
+COPY --from=builder --chown=nodecast:nodecast /build/package.json ./
+COPY --from=builder --chown=nodecast:nodecast /build/prisma ./prisma/
+COPY --from=builder --chown=nodecast:nodecast /build/public ./public/
+
+# Copy runtime configuration
+COPY --chown=nodecast:nodecast mimes.json ./
+COPY --chown=nodecast:nodecast code.json ./
+
+# Create necessary directories with proper permissions
+RUN mkdir -p \
+    /nodecast/uploads \
+    /nodecast/temp \
+    /nodecast/themes \
+    /nodecast/config \
+    /nodecast/logs \
+    /nodecast/public \
+    && chown -R nodecast:nodecast /nodecast \
+    && chmod -R 755 /nodecast
+
+# Create health check script
+COPY --chown=nodecast:nodecast <<'EOF' /nodecast/healthcheck.sh
+#!/bin/sh
+set -e
+
+# Check if the main process is running
+if ! pgrep -f "node.*server" > /dev/null; then
+    echo "NodeCast process not found"
+    exit 1
+fi
+
+# Check if the web server is responding
+if ! wget -q --spider --timeout=10 http://localhost:3000/api/healthcheck; then
+    echo "Health check endpoint not responding"
+    exit 1
+fi
+
+# Check if sync engine WebSocket is responding (if enabled)
+if [ "${FEATURES_REAL_TIME_SYNC:-true}" = "true" ]; then
+    if ! nc -z localhost 8081; then
+        echo "WebSocket sync engine not responding"
+        exit 1
+    fi
+fi
+
+echo "All health checks passed"
+exit 0
+EOF
+
+RUN chmod +x /nodecast/healthcheck.sh
+
+# Environment variables with secure defaults
+ENV NODE_ENV=production \
+    NODE_OPTIONS="--max-old-space-size=1024 --enable-source-maps" \
+    CORE_PORT=3000 \
+    CORE_HOSTNAME=0.0.0.0 \
+    DATASOURCE_TYPE=local \
+    DATASOURCE_LOCAL_DIRECTORY=/nodecast/uploads \
+    CORE_TEMP_DIRECTORY=/nodecast/temp
+
+# Security: Don't run as root
+USER nodecast
+
+# Expose ports
+EXPOSE 3000 8081
+
+# Health check using custom script
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD ["/nodecast/healthcheck.sh"]
+
+# Use dumb-init to handle signals properly
+ENTRYPOINT ["dumb-init", "--"]
+
+# Start the application
+CMD ["node", "--require", "dotenv/config", "--trace-warnings", "./build/server/index.js"]
