@@ -16,7 +16,7 @@ export async function run(name: string, ...steps: Step[]) {
   const { execSync } = await import('child_process');
 
   // Find the first non-flag argument (not starting with --)
-  const runOne = process.argv.slice(2).find(arg => !arg.startsWith('--'));
+  const runOne = process.argv.slice(2).find((arg) => !arg.startsWith('--'));
   if (runOne) {
     const match = steps.find((s) => `${name}/${s.name}` === runOne);
     if (!match) {
