@@ -45,25 +45,26 @@ RUN pnpm run build:docker
 
 FROM base
 
-# Create nodecast user for security (568:568 - standard container user)
+# Create nodecast user for security (568:568 - standard TrueNAS Scale container user)
 RUN addgroup -g 568 nodecast && \
     adduser -D -s /bin/sh -u 568 -G nodecast nodecast
 
+# Copy dependencies and built application
 COPY --from=deps /nodecast/node_modules ./node_modules
-
 COPY --from=builder /nodecast/build ./build
-
 COPY --from=builder /nodecast/mimes.json ./mimes.json
 COPY --from=builder /nodecast/code.json ./code.json
 
+# Generate Prisma client
 RUN pnpm prisma generate
 
 # Clean up temporary files and caches
 RUN rm -rf /tmp/* /root/* /var/cache/apk/*
 
-# Create necessary directories with proper permissions
+# Create placeholder directories (will be overridden by volume mounts)
+# These directories are created empty and chown is fast since no files exist yet
 RUN mkdir -p /nodecast/uploads /nodecast/temp /nodecast/config /nodecast/themes /nodecast/public && \
-    chown -R nodecast:nodecast /nodecast
+    chown nodecast:nodecast /nodecast
 
 ENV NODE_ENV=production
 ENV NODECAST_DOCKER=true
