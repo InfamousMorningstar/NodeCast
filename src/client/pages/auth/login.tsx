@@ -290,7 +290,7 @@ export default function Login() {
                 )}px, 50px)`,
               }}
             >
-              <b>{config.website.title ?? 'Zipline'}</b>
+              <b>{config.website.title ?? 'NodeCast'}</b>
             </Title>
           </div>
 

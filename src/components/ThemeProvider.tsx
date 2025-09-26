@@ -2,7 +2,7 @@ import { Response } from '@/lib/api/response';
 import { Config } from '@/lib/config/validate';
 import { useSettingsStore } from '@/lib/store/settings';
 import { useUserStore } from '@/lib/store/user';
-import { ZiplineTheme, findTheme, themeComponents } from '@/lib/theme';
+import { NodeCastTheme, findTheme, themeComponents } from '@/lib/theme';
 import dark_blue from '@/lib/theme/builtins/dark_blue';
 import { MantineProvider, createTheme } from '@mantine/core';
 import { useColorScheme } from '@mantine/hooks';
@@ -11,7 +11,7 @@ import useSWR from 'swr';
 import { useShallow } from 'zustand/shallow';
 
 const ThemeContext = createContext<{
-  themes: ZiplineTheme[];
+  themes: NodeCastTheme[];
 }>({
   themes: [],
 });
@@ -28,7 +28,7 @@ export default function ThemeProvider({
   ssrDefaultTheme,
   children,
 }: {
-  ssrThemes?: ZiplineTheme[];
+  ssrThemes?: NodeCastTheme[];
   ssrDefaultTheme?: Config['website']['theme'];
   children: React.ReactNode;
 }) {
@@ -61,7 +61,7 @@ export default function ThemeProvider({
   }
 
   if (!theme) {
-    theme = findTheme('builtin:dark_blue') ?? (dark_blue as unknown as ZiplineTheme); // back up theme if all else fails lol
+    theme = findTheme('builtin:dark_blue') ?? (dark_blue as unknown as NodeCastTheme); // back up theme if all else fails lol
   }
 
   return (

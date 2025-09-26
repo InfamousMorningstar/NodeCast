@@ -39,7 +39,7 @@ function getClient() {
   const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
   const client = new PrismaClient({
     adapter,
-    log: process.env.ZIPLINE_DB_LOG ? parseDbLog(process.env.ZIPLINE_DB_LOG) : undefined,
+    log: process.env.NODECAST_DB_LOG ? parseDbLog(process.env.NODECAST_DB_LOG) : undefined,
   }).$extends({
     result: {
       file: {

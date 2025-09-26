@@ -1,6 +1,6 @@
 import { renderToString } from 'react-dom/server';
 import { createStaticHandler, createStaticRouter, RouteObject, StaticRouterProvider } from 'react-router-dom';
-import { createZiplineSsr } from './createZiplineSsr';
+import { createNodeCastSsr } from './createNodeCastSsr';
 
 export async function renderHtml(
   routes: RouteObject[],
@@ -25,7 +25,7 @@ export async function renderHtml(
 
   return {
     html,
-    meta: `<title>Shortened URL</title>\n${createZiplineSsr(data)}`,
+    meta: `<title>Shortened URL</title>\n${createNodeCastSsr(data)}`,
     status,
     redirect,
   };

@@ -1,4 +1,4 @@
-export const ZIPLINE_SSR_INSERT = '<!--zipline-ssr-insert-->';
-export const ZIPLINE_SSR_META = '<!--zipline-ssr-meta-->';
+export const NODECAST_SSR_INSERT = '<!--nodecast-ssr-insert-->';
+export const NODECAST_SSR_META = '<!--nodecast-ssr-meta-->';
 
-export const ZIPLINE_SSR_PROP = '__ZIPLINE_SSR__';
+export const NODECAST_SSR_PROP = '__NODECAST_SSR__';

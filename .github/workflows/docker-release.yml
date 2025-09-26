@@ -1,10 +1,13 @@
-name: 'Push Release Docker Images'
+# DISABLED WORKFLOW - NodeCast Project
+# This workflow was designed for the original Zipline project and is no longer used.
+# NodeCast uses dockerhub.yml for all Docker builds instead.
 
-on:
-  push:
-    tags:
-      - 'v4.*.*'
-  workflow_dispatch:
+# To prevent accidental triggers, this workflow has been disabled.
+# on:
+#   push:
+#     tags:
+#       - 'v4.*.*'
+#   workflow_dispatch:
 
 jobs:
   push:

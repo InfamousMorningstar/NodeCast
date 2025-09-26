@@ -44,7 +44,7 @@ yarn-error.log*
 .direnv
 .devenv
 
-# zipline
+# nodecast
 uploads*/
 *.crt
 *.key

@@ -14,8 +14,8 @@ import { File, fileSelect } from '@/lib/db/models/file';
 import { User, userSelect } from '@/lib/db/models/user';
 import { parseString } from '@/lib/parser';
 import { parserMetrics } from '@/lib/parser/metrics';
-import { createZiplineSsr } from '@/lib/ssr/createZiplineSsr';
-import type { ZiplineTheme } from '@/lib/theme';
+import { createNodeCastSsr } from '@/lib/ssr/createNodeCastSsr';
+import type { NodeCastTheme } from '@/lib/theme';
 import { readThemes } from '@/lib/theme/file';
 import * as cookie from 'cookie';
 import { FastifyRequest } from 'fastify';
@@ -41,7 +41,7 @@ export async function render(
     defaultTheme,
     req,
   }: {
-    themes: ZiplineTheme[];
+    themes: NodeCastTheme[];
     defaultTheme: Config['website']['theme'];
     req: FastifyRequest;
   },
@@ -132,7 +132,7 @@ export async function render(
 
       return {
         html,
-        meta: `<title>Password Protected</title>\n${createZiplineSsr(data)}`,
+        meta: `<title>Password Protected</title>\n${createNodeCastSsr(data)}`,
       };
     }
   }
@@ -270,6 +270,6 @@ export async function render(
 
   return {
     html,
-    meta: `${meta}\n${createZiplineSsr(data)}`,
+    meta: `${meta}\n${createNodeCastSsr(data)}`,
   };
 }

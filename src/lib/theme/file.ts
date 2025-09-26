@@ -1,6 +1,6 @@
-import { readFile, readdir } from 'fs/promises';
+﻿import { readFile, readdir } from 'fs/promises';
 import { basename, join } from 'path';
-import { ZiplineTheme } from '.';
+import { NodeCastTheme } from '.';
 import { exists } from '../fs';
 
 import dark_gray from './builtins/dark_gray.theme.json';
@@ -24,7 +24,7 @@ import { log } from '../logger';
 const THEMES_DIR = './themes';
 const logger = log('theme');
 
-export async function readThemes(): Promise<ZiplineTheme[]> {
+export async function readThemes(): Promise<NodeCastTheme[]> {
   const themes = await readThemesDir();
   const parsedThemes = await parseThemes(themes);
 
@@ -43,21 +43,21 @@ export async function readThemes(): Promise<ZiplineTheme[]> {
   }
 
   parsedThemes.push(
-    handleOverrideColors(dark_gray as ZiplineTheme),
-    handleOverrideColors(light_gray as unknown as ZiplineTheme),
-    handleOverrideColors(black_dark as unknown as ZiplineTheme),
+    handleOverrideColors(dark_gray as NodeCastTheme),
+    handleOverrideColors(light_gray as unknown as NodeCastTheme),
+    handleOverrideColors(black_dark as unknown as NodeCastTheme),
 
-    handleOverrideColors(light_blue as unknown as ZiplineTheme),
-    handleOverrideColors(dark_blue as unknown as ZiplineTheme),
+    handleOverrideColors(light_blue as unknown as NodeCastTheme),
+    handleOverrideColors(dark_blue as unknown as NodeCastTheme),
 
-    handleOverrideColors(cat_frappe as unknown as ZiplineTheme),
-    handleOverrideColors(cat_latte as unknown as ZiplineTheme),
-    handleOverrideColors(cat_macchiato as unknown as ZiplineTheme),
-    handleOverrideColors(cat_mocha as unknown as ZiplineTheme),
+    handleOverrideColors(cat_frappe as unknown as NodeCastTheme),
+    handleOverrideColors(cat_latte as unknown as NodeCastTheme),
+    handleOverrideColors(cat_macchiato as unknown as NodeCastTheme),
+    handleOverrideColors(cat_mocha as unknown as NodeCastTheme),
 
-    handleOverrideColors(midnight_orange as unknown as ZiplineTheme),
-    handleOverrideColors(midnight_blue as unknown as ZiplineTheme),
-    handleOverrideColors(midnight_purple as unknown as ZiplineTheme),
+    handleOverrideColors(midnight_orange as unknown as NodeCastTheme),
+    handleOverrideColors(midnight_blue as unknown as NodeCastTheme),
+    handleOverrideColors(midnight_purple as unknown as NodeCastTheme),
   );
 
   return parsedThemes;
@@ -73,7 +73,7 @@ export async function readThemesDir(): Promise<string[]> {
   return themes;
 }
 
-export async function parseThemes(themes: string[]): Promise<ZiplineTheme[]> {
+export async function parseThemes(themes: string[]): Promise<NodeCastTheme[]> {
   const parsedThemes = [];
 
   for (const theme of themes) {
@@ -87,7 +87,7 @@ export async function parseThemes(themes: string[]): Promise<ZiplineTheme[]> {
   return parsedThemes;
 }
 
-export function handleOverrideColors(theme: ZiplineTheme) {
+export function handleOverrideColors(theme: NodeCastTheme) {
   return {
     ...theme,
     colors: {
@@ -97,5 +97,5 @@ export function handleOverrideColors(theme: ZiplineTheme) {
       oidc: theme.colors?.oidc || Array(10).fill('#72abcf'),
       discord: theme.colors?.discord || Array(10).fill('#5865F2'),
     },
-  } as ZiplineTheme;
+  } as NodeCastTheme;
 }

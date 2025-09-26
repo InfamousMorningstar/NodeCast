@@ -5,33 +5,33 @@ services:
     env_file:
       - .env
     environment:
-      POSTGRES_USER: ${POSTGRESQL_USER:-zipline}
+      POSTGRES_USER: ${POSTGRESQL_USER:-nodecast}
       POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD:?POSTGRESSQL_PASSWORD is required}
-      POSTGRES_DB: ${POSTGRESQL_DB:-zipline}
+      POSTGRES_DB: ${POSTGRESQL_DB:-nodecast}
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD', 'pg_isready', '-U', 'zipline']
+      test: ['CMD', 'pg_isready', '-U', 'nodecast']
       interval: 10s
       timeout: 5s
       retries: 5
 
-  zipline:
-    image: ghcr.io/diced/zipline:latest
+  nodecast:
+    image: morningstar0/nodecast:latest
     restart: unless-stopped
     ports:
       - '3000:3000'
     env_file:
       - .env
     environment:
-      - DATABASE_URL=postgres://${POSTGRESQL_USER:-zipline}:${POSTGRESQL_PASSWORD}@postgresql:5432/${POSTGRESQL_DB:-zipline}
+      - DATABASE_URL=postgres://${POSTGRESQL_USER:-nodecast}:${POSTGRESQL_PASSWORD}@postgresql:5432/${POSTGRESQL_DB:-nodecast}
     depends_on:
       postgresql:
         condition: service_healthy
     volumes:
-      - './uploads:/zipline/uploads'
-      - './public:/zipline/public'
-      - './themes:/zipline/themes'
+      - './uploads:/nodecast/uploads'
+      - './public:/nodecast/public'
+      - './themes:/nodecast/themes'
     healthcheck:
       test: ['CMD', 'wget', '-q', '--spider', 'http://0.0.0.0:3000/api/healthcheck']
       interval: 15s

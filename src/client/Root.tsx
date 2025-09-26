@@ -3,14 +3,14 @@ import { Notifications } from '@mantine/notifications';
 import { Outlet } from 'react-router-dom';
 import { SWRConfig } from 'swr';
 import ThemeProvider from '@/components/ThemeProvider';
-import { type ZiplineTheme } from '@/lib/theme';
+import { type NodeCastTheme } from '@/lib/theme';
 import { type Config } from '@/lib/config/validate';
 
 export default function Root({
   themes,
   defaultTheme,
 }: {
-  themes?: ZiplineTheme[];
+  themes?: NodeCastTheme[];
   defaultTheme?: Config['website']['theme'];
 }) {
   return (

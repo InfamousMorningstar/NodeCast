@@ -2,11 +2,12 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { AdvancedFileManager } from '../../../../lib/files/AdvancedFileManager';
 import { userMiddleware } from '../../../middleware/user';
 import { prisma } from '../../../../lib/db';
+import { PrismaClient } from '@/prisma/client';
 
 export const PATH = '/api/files/management';
 
 export default async function fileManagementRoutes(server: FastifyInstance) {
-  const fileManager = new AdvancedFileManager(prisma);
+  const fileManager = new AdvancedFileManager(prisma as unknown as PrismaClient);
 
   // Get file metadata with tags and smart folder information
   server.get(

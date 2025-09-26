@@ -8,7 +8,7 @@ import { config } from '@/lib/config';
 import fastifyStatic from '@fastify/static';
 import { renderHtml } from '@/lib/ssr/renderHtml';
 import { readThemes } from '@/lib/theme/file';
-import { ZIPLINE_SSR_INSERT, ZIPLINE_SSR_META } from '@/lib/ssr/constants';
+import { NODECAST_SSR_INSERT, NODECAST_SSR_META } from '@/lib/ssr/constants';
 
 export const ALL_METHODS: HTTPMethods[] = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT'];
 
@@ -88,7 +88,7 @@ async function vitePlugin(fastify: FastifyInstance) {
 
       if (status && [404, 410].includes(status)) return this.callNotFound();
 
-      const finalHtml = template.replace(ZIPLINE_SSR_META, meta!).replace(ZIPLINE_SSR_INSERT, html);
+      const finalHtml = template.replace(NODECAST_SSR_META, meta!).replace(NODECAST_SSR_INSERT, html);
 
       return this.type('text/html').send(finalHtml);
     } catch (err) {

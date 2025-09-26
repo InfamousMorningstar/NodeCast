@@ -1,212 +1,212 @@
 [
   {
     "ext": "html",
-    "mime": "text/x-zipline-html",
+    "mime": "text/x-nodecast-html",
     "name": "HTML"
   },
   {
     "ext": "css",
-    "mime": "text/x-zipline-css",
+    "mime": "text/x-nodecast-css",
     "name": "CSS"
   },
   {
     "ext": "cpp",
-    "mime": "text/x-zipline-c++src",
+    "mime": "text/x-nodecast-c++src",
     "name": "C++"
   },
   {
     "ext": "js",
-    "mime": "text/x-zipline-javascript",
+    "mime": "text/x-nodecast-javascript",
     "name": "JavaScript"
   },
   {
     "ext": "py",
-    "mime": "text/x-zipline-python",
+    "mime": "text/x-nodecast-python",
     "name": "Python"
   },
   {
     "ext": "rb",
-    "mime": "text/x-zipline-ruby",
+    "mime": "text/x-nodecast-ruby",
     "name": "Ruby"
   },
   {
     "ext": "java",
-    "mime": "text/x-zipline-java",
+    "mime": "text/x-nodecast-java",
     "name": "Java"
   },
   {
     "ext": "md",
-    "mime": "text/x-zipline-markdown",
+    "mime": "text/x-nodecast-markdown",
     "name": "Markdown"
   },
   {
     "ext": "c",
-    "mime": "text/x-zipline-csrc",
+    "mime": "text/x-nodecast-csrc",
     "name": "C"
   },
   {
     "ext": "php",
-    "mime": "text/x-zipline-httpd-php",
+    "mime": "text/x-nodecast-httpd-php",
     "name": "PHP"
   },
   {
     "ext": "sass",
-    "mime": "text/x-zipline-sass",
+    "mime": "text/x-nodecast-sass",
     "name": "Sass"
   },
   {
     "ext": "scss",
-    "mime": "text/x-zipline-scss",
+    "mime": "text/x-nodecast-scss",
     "name": "SCSS"
   },
   {
     "ext": "swift",
-    "mime": "text/x-zipline-swift",
+    "mime": "text/x-nodecast-swift",
     "name": "Swift"
   },
   {
     "ext": "ts",
-    "mime": "text/x-zipline-typescript",
+    "mime": "text/x-nodecast-typescript",
     "name": "TypeScript"
   },
   {
     "ext": "go",
-    "mime": "text/x-zipline-go",
+    "mime": "text/x-nodecast-go",
     "name": "Go"
   },
   {
     "ext": "rs",
-    "mime": "text/x-zipline-rustsrc",
+    "mime": "text/x-nodecast-rustsrc",
     "name": "Rust"
   },
   {
     "ext": "sh",
-    "mime": "text/x-zipline-sh",
+    "mime": "text/x-nodecast-sh",
     "name": "Bash"
   },
   {
     "ext": "json",
-    "mime": "text/x-zipline-json",
+    "mime": "text/x-nodecast-json",
     "name": "JSON"
   },
   {
     "ext": "ps1",
-    "mime": "text/x-zipline-powershell",
+    "mime": "text/x-nodecast-powershell",
     "name": "PowerShell"
   },
   {
     "ext": "sql",
-    "mime": "text/x-zipline-sql",
+    "mime": "text/x-nodecast-sql",
     "name": "SQL"
   },
   {
     "ext": "yaml",
-    "mime": "text/x-zipline-yaml",
+    "mime": "text/x-nodecast-yaml",
     "name": "YAML"
   },
   {
     "ext": "dockerfile",
-    "mime": "text/x-zipline-dockerfile",
+    "mime": "text/x-nodecast-dockerfile",
     "name": "Dockerfile"
   },
   {
     "ext": "lua",
-    "mime": "text/x-zipline-lua",
+    "mime": "text/x-nodecast-lua",
     "name": "Lua"
   },
   {
     "ext": "conf",
-    "mime": "text/x-zipline-nginx-conf",
+    "mime": "text/x-nodecast-nginx-conf",
     "name": "NGINX Config File"
   },
   {
     "ext": "pl",
-    "mime": "text/x-zipline-perl",
+    "mime": "text/x-nodecast-perl",
     "name": "Perl"
   },
   {
     "ext": "r",
-    "mime": "text/x-zipline-rsrc",
+    "mime": "text/x-nodecast-rsrc",
     "name": "R"
   },
   {
     "ext": "scala",
-    "mime": "text/x-zipline-scala",
+    "mime": "text/x-nodecast-scala",
     "name": "Scala"
   },
   {
     "ext": "groovy",
-    "mime": "text/x-zipline-groovy",
+    "mime": "text/x-nodecast-groovy",
     "name": "Groovy"
   },
   {
     "ext": "kt",
-    "mime": "text/x-zipline-kotlin",
+    "mime": "text/x-nodecast-kotlin",
     "name": "Kotlin"
   },
   {
     "ext": "hs",
-    "mime": "text/x-zipline-haskell",
+    "mime": "text/x-nodecast-haskell",
     "name": "Haskell"
   },
   {
     "ext": "ex",
-    "mime": "text/x-zipline-elixir",
+    "mime": "text/x-nodecast-elixir",
     "name": "Elixir"
   },
   {
     "ext": "vim",
-    "mime": "text/x-zipline-vim",
+    "mime": "text/x-nodecast-vim",
     "name": "Vim"
   },
   {
     "ext": "m",
-    "mime": "text/x-zipline-matlab",
+    "mime": "text/x-nodecast-matlab",
     "name": "MATLAB"
   },
   {
     "ext": "dart",
-    "mime": "text/x-zipline-dart",
+    "mime": "text/x-nodecast-dart",
     "name": "Dart"
   },
   {
     "ext": "hbs",
-    "mime": "text/x-zipline-handlebars-template",
+    "mime": "text/x-nodecast-handlebars-template",
     "name": "Handlebars"
   },
   {
     "ext": "hcl",
-    "mime": "text/x-zipline-hcl",
+    "mime": "text/x-nodecast-hcl",
     "name": "HCL"
   },
   {
     "ext": "http",
-    "mime": "text/x-zipline-http",
+    "mime": "text/x-nodecast-http",
     "name": "HTTP"
   },
   {
     "ext": "ini",
-    "mime": "text/x-zipline-ini",
+    "mime": "text/x-nodecast-ini",
     "name": "INI"
   },
   {
     "ext": "jsx",
-    "mime": "text/x-zipline-jsx",
+    "mime": "text/x-nodecast-jsx",
     "name": "JSX"
   },
   {
     "ext": "coffee",
-    "mime": "text/x-zipline-coffeescript",
+    "mime": "text/x-nodecast-coffeescript",
     "name": "CoffeeScript"
   },
   {
     "ext": "tex",
-    "mime": "text/x-zipline-latex",
+    "mime": "text/x-nodecast-latex",
     "name": "LaTeX (KaTeX)"
   },
   {
     "name": "Plain Text",
-    "mime": "text/x-zipline-plain",
+    "mime": "text/x-nodecast-plain",
     "ext": "txt"
   }
 ]

@@ -77,7 +77,7 @@ export default fastifyPlugin(
         preHandler: [userMiddleware, administratorMiddleware],
       },
       async (_, res) => {
-        const settings = await prisma.zipline.findFirst({
+        const settings = await prisma.nodeCast.findFirst({
           omit: {
             createdAt: true,
             updatedAt: true,
@@ -99,7 +99,7 @@ export default fastifyPlugin(
         ...secondlyRatelimit(1),
       },
       async (req, res) => {
-        const settings = await prisma.zipline.findFirst();
+        const settings = await prisma.nodeCast.findFirst();
         if (!settings) return res.notFound('no settings table found');
 
         const themes = (await readThemes()).map((x) => x.id);
@@ -396,7 +396,7 @@ export default fastifyPlugin(
           });
         }
 
-        const newSettings = await prisma.zipline.update({
+        const newSettings = await prisma.nodeCast.update({
           where: {
             id: settings.id,
           },

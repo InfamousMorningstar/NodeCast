@@ -1,6 +1,6 @@
 import { config } from '@/lib/config';
 import { Config } from '@/lib/config/validate';
-import { getZipline } from '@/lib/db/models/zipline';
+import { getNodeCast } from '@/lib/db/models/zipline';
 import { log } from '@/lib/logger';
 import enabled from '@/lib/oauth/enabled';
 import fastifyPlugin from 'fastify-plugin';
@@ -51,7 +51,7 @@ export const PATH = '/api/server/public';
 export default fastifyPlugin(
   (server, _, done) => {
     server.get<{ Body: Body }>(PATH, async (req, res) => {
-      const zipline = await getZipline();
+      const nodecast = await getNodeCast();
 
       const response: ApiServerPublicResponse = {
         oauth: {
@@ -77,7 +77,7 @@ export default fastifyPlugin(
           defaultFormat: config.files.defaultFormat,
         },
         chunks: config.chunks,
-        firstSetup: zipline.firstSetup,
+        firstSetup: nodecast.firstSetup,
         domains: config.domains,
       };
 

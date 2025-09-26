@@ -132,7 +132,7 @@ export const DATABASE_TO_PROP = {
 export type DatabaseToPropKey = keyof typeof DATABASE_TO_PROP;
 
 export async function readDatabaseSettings() {
-  let ziplineTable = await prisma.zipline.findFirst({
+  let nodecastTable = await prisma.nodeCast.findFirst({
     omit: {
       createdAt: true,
       updatedAt: true,
@@ -141,10 +141,10 @@ export async function readDatabaseSettings() {
     },
   });
 
-  if (!ziplineTable) {
-    ziplineTable = await prisma.zipline.create({
+  if (!nodecastTable) {
+    nodecastTable = await prisma.nodeCast.create({
       data: {
-        coreTempDirectory: join(tmpdir(), 'zipline'),
+        coreTempDirectory: join(tmpdir(), 'nodecast'),
       },
       omit: {
         createdAt: true,
@@ -155,5 +155,5 @@ export async function readDatabaseSettings() {
     });
   }
 
-  return ziplineTable;
+  return nodecastTable;
 }

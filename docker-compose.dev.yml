@@ -14,7 +14,7 @@ services:
       timeout: 5s
       retries: 5
 
-  zipline:
+  nodecast:
     build:
       context: .
       dockerfile: Dockerfile
@@ -28,9 +28,9 @@ services:
     depends_on:
       - postgres
     volumes:
-      - './uploads:/zipline/uploads'
-      - './public:/zipline/public'
-      - './themes:/zipline/themes'
+      - './uploads:/nodecast/uploads'
+      - './public:/nodecast/public'
+      - './themes:/nodecast/themes'
 
 volumes:
   pgdata:

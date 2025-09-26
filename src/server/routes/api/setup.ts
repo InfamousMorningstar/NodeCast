@@ -1,7 +1,7 @@
 import { createToken, hashPassword } from '@/lib/crypto';
 import { prisma } from '@/lib/db';
 import { User, userSelect } from '@/lib/db/models/user';
-import { getZipline } from '@/lib/db/models/zipline';
+import { getNodeCast } from '@/lib/db/models/zipline';
 import { log } from '@/lib/logger';
 import { secondlyRatelimit } from '@/lib/ratelimits';
 import fastifyPlugin from 'fastify-plugin';
@@ -22,14 +22,14 @@ export const PATH = '/api/setup';
 export default fastifyPlugin(
   (server, _, done) => {
     server.get(PATH, async (_, res) => {
-      const { firstSetup } = await getZipline();
+      const { firstSetup } = await getNodeCast();
       if (!firstSetup) return res.forbidden();
 
       return res.send({ firstSetup });
     });
 
     server.post<{ Body: Body }>(PATH, secondlyRatelimit(5), async (req, res) => {
-      const { firstSetup, id } = await getZipline();
+      const { firstSetup, id } = await getNodeCast();
 
       if (!firstSetup) return res.forbidden();
 
@@ -51,7 +51,7 @@ export default fastifyPlugin(
 
       logger.info('first setup complete');
 
-      await prisma.zipline.update({
+      await prisma.nodeCast.update({
         where: {
           id,
         },

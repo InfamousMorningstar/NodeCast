@@ -193,13 +193,13 @@ export function Component() {
               fontSize: `clamp(20px, ${Math.max(50 - (config.website.title?.length ?? 0) / 2, 20)}px, 50px)`,
             }}
           >
-            <b>{config.website.title ?? 'Zipline'}</b>
+            <b>{config.website.title ?? 'NodeCast'}</b>
           </Title>
         </div>
 
         {invite && (
           <Text ta='center' size='sm' c='dimmed'>
-            You’ve been invited to join <b>{config?.website?.title ?? 'Zipline'}</b>
+            You’ve been invited to join <b>{config?.website?.title ?? 'NodeCast'}</b>
             {invite.inviter && (
               <>
                 {' '}

@@ -1,4 +1,4 @@
-import { useSsrData } from '@/components/ZiplineSSRProvider';
+import { useSsrData } from '@/components/NodeCastSSRProvider';
 import { Anchor, Button, Modal, PasswordInput } from '@mantine/core';
 import { useEffect, useState } from 'react';
 

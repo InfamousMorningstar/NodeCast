@@ -6,7 +6,7 @@ import { Config } from '@/lib/config/validate';
 import { verifyPassword } from '@/lib/crypto';
 import { prisma } from '@/lib/db';
 import { renderHtml } from '@/lib/ssr/renderHtml';
-import { ZiplineTheme } from '@/lib/theme';
+import { NodeCastTheme } from '@/lib/theme';
 import { createRoutes } from './routes'; // This should include the `/url/:id` route
 
 export async function render(
@@ -15,7 +15,7 @@ export async function render(
     defaultTheme,
     req,
   }: {
-    themes: ZiplineTheme[];
+    themes: NodeCastTheme[];
     defaultTheme: Config['website']['theme'];
     req: FastifyRequest;
   },

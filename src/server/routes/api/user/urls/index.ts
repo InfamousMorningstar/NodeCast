@@ -22,10 +22,10 @@ type Body = {
 };
 
 type Headers = {
-  'x-zipline-max-views': string;
-  'x-zipline-no-json': string;
-  'x-zipline-domain': string;
-  'x-zipline-password': string;
+  'x-nodecast-max-views': string;
+  'x-nodecast-no-json': string;
+  'x-nodecast-domain': string;
+  'x-nodecast-password': string;
 };
 
 type Query = {
@@ -50,7 +50,7 @@ export default fastifyPlugin(
       { preHandler: [userMiddleware, rateLimit] },
       async (req, res) => {
         const { vanity, destination, enabled } = req.body;
-        const noJson = !!req.headers['x-zipline-no-json'];
+        const noJson = !!req.headers['x-nodecast-no-json'];
 
         const countUrls = await prisma.url.count({
           where: {
@@ -65,21 +65,21 @@ export default fastifyPlugin(
         let maxViews: number | undefined;
 
         let returnDomain;
-        const headerDomain = req.headers['x-zipline-domain'];
+        const headerDomain = req.headers['x-nodecast-domain'];
         if (headerDomain) {
           const domainArray = headerDomain.split(',');
           returnDomain = domainArray[Math.floor(Math.random() * domainArray.length)].trim();
         }
 
-        const maxViewsHeader = req.headers['x-zipline-max-views'];
+        const maxViewsHeader = req.headers['x-nodecast-max-views'];
         if (maxViewsHeader) {
           maxViews = Number(maxViewsHeader);
           if (isNaN(maxViews)) return res.badRequest('Max views must be a number');
           if (maxViews < 0) return res.badRequest('Max views must be greater than 0');
         }
 
-        const password = req.headers['x-zipline-password']
-          ? await hashPassword(req.headers['x-zipline-password'])
+        const password = req.headers['x-nodecast-password']
+          ? await hashPassword(req.headers['x-nodecast-password'])
           : undefined;
 
         if (!destination) return res.badRequest('Destination is required');

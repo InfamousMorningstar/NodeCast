@@ -15,7 +15,7 @@ const cookieOptions: SessionOptions['cookieOptions'] = {
   secure: false,
 };
 
-export type ZiplineSession = {
+export type NodeCastSession = {
   id: string | null;
   sessionId: string | null;
 };
@@ -25,12 +25,12 @@ export async function getSession(
   reply: FastifyReply | ServerResponse<IncomingMessage>,
 ) {
   if (!(req as any).raw || !(req as any).raw) {
-    const session = await getIronSession<ZiplineSession>(
+    const session = await getIronSession<NodeCastSession>(
       req as IncomingMessage,
       reply as ServerResponse<IncomingMessage>,
       {
         password: config.core.secret,
-        cookieName: 'zipline_session',
+        cookieName: 'nodecast_session',
         cookieOptions,
       },
     );
@@ -38,12 +38,12 @@ export async function getSession(
     return session;
   }
 
-  const session = await getIronSession<ZiplineSession>(
+  const session = await getIronSession<NodeCastSession>(
     (req as FastifyRequest).raw,
     (reply as FastifyReply).raw,
     {
       password: config.core.secret,
-      cookieName: 'zipline_session',
+      cookieName: 'nodecast_session',
       cookieOptions,
     },
   );

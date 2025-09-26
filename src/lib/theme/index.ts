@@ -12,7 +12,7 @@ import {
   VariantColorsResolver,
 } from '@mantine/core';
 
-export type ZiplineTheme = MantineTheme & {
+export type NodeCastTheme = MantineTheme & {
   id: string;
   name: string;
   colorScheme: string;
@@ -20,7 +20,7 @@ export type ZiplineTheme = MantineTheme & {
   extraCss?: string;
 };
 
-export function findTheme(id: string, themes: ZiplineTheme[] = []): ZiplineTheme | undefined {
+export function findTheme(id: string, themes: NodeCastTheme[] = []): NodeCastTheme | undefined {
   return themes.find((theme) => theme.id === id);
 }
 
@@ -42,7 +42,7 @@ const variantColorResolver: VariantColorsResolver = (input) => {
   };
 };
 
-export function themeComponents(theme: ZiplineTheme): MantineThemeOverride {
+export function themeComponents(theme: NodeCastTheme): MantineThemeOverride {
   const { components, ...rest } = theme;
   return {
     ...rest,

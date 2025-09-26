@@ -2,11 +2,12 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { SyncEngine, SyncStatus } from '../../../lib/sync/SyncEngine';
 import { userMiddleware } from '../../middleware/user';
 import { prisma } from '../../../lib/db';
+import { PrismaClient } from '@/prisma/client';
 
 export const PATH = '/api/sync';
 
 export default async function syncRoutes(server: FastifyInstance) {
-  const syncEngine = new SyncEngine(prisma, 8081);
+  const syncEngine = new SyncEngine(prisma as unknown as PrismaClient, 8081);
 
   // Get sync status for current user
   server.get(

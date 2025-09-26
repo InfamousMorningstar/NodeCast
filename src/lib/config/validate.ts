@@ -11,8 +11,8 @@ declare global {
   namespace NodeJS {
     interface ProcessEnv {
       NODECAST_BUILD?: string;
-      ZIPLINE_DB_LOG?: string;
-      ZIPLINE_OVERRIDE_DISABLED_WORKER_LOG?: string;
+      NODECAST_DB_LOG?: string;
+      NODECAST_OVERRIDE_DISABLED_WORKER_LOG?: string;
     }
   }
 }
@@ -73,7 +73,7 @@ export const schema = z.object({
     tempDirectory: z
       .string()
       .transform((s) => resolve(s))
-      .default(join(tmpdir(), 'zipline')),
+      .default(join(tmpdir(), 'nodecast')),
   }),
   chunks: z.object({
     max: z.string().default('95mb'),
@@ -169,7 +169,7 @@ export const schema = z.object({
       showUserSpecific: z.boolean().default(true),
     }),
     versionChecking: z.boolean().default(true),
-    versionAPI: z.url().default('https://zipline-version.diced.sh/'),
+    versionAPI: z.url().default('https://nodecast-version.api.com/'),
   }),
   domains: z.array(z.string()).default([]),
   invites: z.object({
@@ -177,7 +177,7 @@ export const schema = z.object({
     length: z.number().default(8),
   }),
   website: z.object({
-    title: z.string().default('Zipline'),
+    title: z.string().default('NodeCast'),
     titleLogo: z.url().nullable().default(null),
     externalLinks: z
       .array(
@@ -189,11 +189,11 @@ export const schema = z.object({
       .default([
         {
           name: 'GitHub',
-          url: 'https://github.com/diced/zipline',
+          url: 'https://github.com/InfamousMorningstar/nodecast',
         },
         {
           name: 'Documentation',
-          url: 'https://zipline.diced.sh',
+          url: 'https://nodecast.docs',
         },
       ]),
     loginBackground: z.url().nullable().default(null),
@@ -218,7 +218,7 @@ export const schema = z.object({
   mfa: z.object({
     totp: z.object({
       enabled: z.boolean().default(false),
-      issuer: z.string().default('Zipline'),
+      issuer: z.string().default('NodeCast'),
     }),
     passkeys: z.boolean().default(true),
   }),
@@ -327,9 +327,9 @@ export const schema = z.object({
   }),
   pwa: z.object({
     enabled: z.boolean().default(true),
-    title: z.string().default('Zipline'),
-    shortName: z.string().default('Zipline'),
-    description: z.string().default('Zipline'),
+    title: z.string().default('NodeCast'),
+    shortName: z.string().default('NodeCast'),
+    description: z.string().default('NodeCast Enterprise File Server'),
     themeColor: z.string().default('#000000'),
     backgroundColor: z.string().default('#000000'),
   }),

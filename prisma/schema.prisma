@@ -10,7 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Zipline {
+model NodeCast {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -19,7 +19,7 @@ model Zipline {
 
   coreReturnHttpsUrls Boolean @default(false)
   coreDefaultDomain   String?
-  coreTempDirectory   String // default join(tmpdir(), 'zipline')
+  coreTempDirectory   String // default join(tmpdir(), 'nodecast')
 
   chunksEnabled Boolean @default(true)
   chunksMax     String  @default("95mb")
@@ -63,14 +63,14 @@ model Zipline {
   featuresMetricsShowUserSpecific Boolean @default(true)
 
   featuresVersionChecking Boolean @default(true)
-  featuresVersionAPI      String @default("https://zipline-version.diced.sh")
+  featuresVersionAPI      String @default("https://nodecast-version.api.com")
 
   invitesEnabled Boolean @default(true)
   invitesLength  Int     @default(6)
 
-  websiteTitle               String  @default("Zipline")
+  websiteTitle               String  @default("NodeCast")
   websiteTitleLogo           String?
-  websiteExternalLinks       Json    @default("[{ \"name\": \"GitHub\", \"url\": \"https://github.com/diced/zipline\"}, { \"name\": \"Documentation\", \"url\": \"https://zipline.diced.sh/\"}]")
+  websiteExternalLinks       Json    @default("[{ \"name\": \"GitHub\", \"url\": \"https://github.com/InfamousMorningstar/nodecast\"}, { \"name\": \"Documentation\", \"url\": \"https://nodecast.docs/\"}]")
   websiteLoginBackground     String?
   websiteLoginBackgroundBlur Boolean @default(true)
   websiteDefaultAvatar       String?
@@ -105,7 +105,7 @@ model Zipline {
   oauthOidcRedirectUri  String?
 
   mfaTotpEnabled Boolean @default(false)
-  mfaTotpIssuer  String  @default("Zipline")
+  mfaTotpIssuer  String  @default("NodeCast")
   mfaPasskeys    Boolean @default(false)
 
   ratelimitEnabled     Boolean  @default(true)
@@ -134,9 +134,9 @@ model Zipline {
   discordOnShortenEmbed      Json?
 
   pwaEnabled         Boolean @default(false)
-  pwaTitle           String  @default("Zipline")
-  pwaShortName       String  @default("Zipline")
-  pwaDescription     String  @default("Zipline")
+  pwaTitle           String  @default("NodeCast")
+  pwaShortName       String  @default("NodeCast")
+  pwaDescription     String  @default("NodeCast Enterprise File Server")
   pwaThemeColor      String  @default("#000000")
   pwaBackgroundColor String  @default("#000000")
 

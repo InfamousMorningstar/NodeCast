@@ -36,7 +36,7 @@ export const PATH = '/api/user';
 export default fastifyPlugin(
   (server, _, done) => {
     server.get(PATH, { preHandler: [userMiddleware] }, async (req, res) => {
-      return res.send({ user: req.user, token: req.cookies.zipline_token });
+      return res.send({ user: req.user, token: req.cookies.nodecast_token });
     });
 
     server.patch<{ Body: Body }>(
@@ -109,7 +109,7 @@ export default fastifyPlugin(
           updated: Object.keys(req.body),
         });
 
-        return res.send({ user, token: req.cookies.zipline_token });
+        return res.send({ user, token: req.cookies.nodecast_token });
       },
     );
 

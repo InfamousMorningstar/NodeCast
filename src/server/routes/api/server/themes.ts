@@ -1,11 +1,11 @@
 import { config } from '@/lib/config';
 import { Config } from '@/lib/config/validate';
-import { ZiplineTheme } from '@/lib/theme';
+import { NodeCastTheme } from '@/lib/theme';
 import { readThemes } from '@/lib/theme/file';
 import fastifyPlugin from 'fastify-plugin';
 
 export type ApiServerThemesResponse = {
-  themes: ZiplineTheme[];
+  themes: NodeCastTheme[];
   defaultTheme: Config['website']['theme'];
 };
 

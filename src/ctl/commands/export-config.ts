@@ -59,7 +59,7 @@ export async function exportConfig({ yml, showDefaults }: { yml?: boolean; showD
 
   const { prisma } = await import('@/lib/db/index.js');
 
-  const ziplineTable = await prisma.zipline.findFirst({
+  const nodecastTable = await prisma.nodeCast.findFirst({
     omit: {
       id: true,
       createdAt: true,
@@ -67,12 +67,12 @@ export async function exportConfig({ yml, showDefaults }: { yml?: boolean; showD
       firstSetup: true,
     },
   });
-  if (!ziplineTable) {
+  if (!nodecastTable) {
     console.error('No Zipline configuration found in the database, run the setup again.');
     return;
   }
 
-  for (const [key, value] of Object.entries(ziplineTable)) {
+  for (const [key, value] of Object.entries(nodecastTable)) {
     if (value === null || value === undefined) continue;
 
     const envVar = getEnvFromProperty(key);

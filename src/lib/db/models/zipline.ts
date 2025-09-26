@@ -1,14 +1,14 @@
 import { prisma } from '..';
 
-export async function getZipline() {
-  const zipline = await prisma.zipline.findFirst();
-  if (!zipline) {
-    return prisma.zipline.create({
+export async function getNodeCast() {
+  const nodecast = await prisma.nodeCast.findFirst();
+  if (!nodecast) {
+    return prisma.nodeCast.create({
       data: {
-        coreTempDirectory: '/tmp/zipline',
+        coreTempDirectory: '/tmp/nodecast',
       },
     });
   }
 
-  return zipline;
+  return nodecast;
 }

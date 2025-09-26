@@ -124,7 +124,7 @@ export default fastifyPlugin(
       const cache = partialsCache.get(options.partial.identifier);
       if (!cache) throw 'No partial upload cache found';
 
-      const prefix = `zipline_partial_${options.partial.identifier}_`;
+      const prefix = `nodecast_partial_${options.partial.identifier}_`;
 
       // file is too large so we delete everything
       if (cache.length + fileSize > bytes(config.files.maxFileSize)) {

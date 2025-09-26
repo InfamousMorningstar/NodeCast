@@ -1,6 +1,5 @@
 name: Bug Report
-description: Report a reproducible bug in Zipline
-title: 'Bug: [short description of the issue]'
+description: Report a reproducible bug in NodeCast        Include any relevant configuration options, settings, or external services that may affect NodeCast's functionality.       Include any relevant configuration options, settings, or external services that may affect NodeCast's functionality.title: 'Bug: [short description of the issue]'
 labels: ['bug']
 body:
   - type: textarea
@@ -16,21 +15,21 @@ body:
   - type: dropdown
     id: runtime-type
     attributes:
-      label: How is Zipline being run?
+      label: How is NodeCast being run?
       description: 
       options:
         - On docker (docker, docker compose, etc.)
         - Built from source (running it through `pnpm start` or `node`, etc.)
-        - Other (please specify in the "Zipline Version" section)
+        - Other (please specify in the "NodeCast Version" section)
     validations:
       required: true
 
   - type: textarea
     id: runtime-version
     attributes:
-      label: Zipline Version
+      label: NodeCast Version
       description: |
-        Provide the version of Zipline you are using:
+        Provide the version of NodeCast you are using:
         - If version checking is enabled (it is by default): paste the response from `http://<domain>/api/version`
         - If using docker (and can't do the above): specify the tag you are using (`latest`, `trunk`, or a tag digest)
         - A simple version number (e.g. "4.2.1") may also suffice
@@ -52,12 +51,12 @@ body:
         - Other (Please specify in the "Steps to Reproduce" section)
 
   - type: textarea
-    id: zipline-logs
+    id: nodecast-logs
     attributes:
       label: Relevant Logs
       description: |
-        Paste any relevant logs from Zipline or the browser (if applicable).
-        If logs don't look useful, you can enable debug mode by setting the environment variable `DEBUG=zipline` when starting Zipline.
+        Paste any relevant logs from NodeCast or the browser (if applicable).
+        If logs don't look useful, you can enable debug mode by setting the environment variable `DEBUG=nodecast` when starting NodeCast.
         Then reproduce the issue and copy the logs here.
         **Note:** Debug logs may contain sensitive information.
 
