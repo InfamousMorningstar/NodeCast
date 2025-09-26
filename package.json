@@ -2,7 +2,8 @@
   "name": "nodecast",
   "private": true,
   "license": "MIT",
-  "version": "4.3.1",
+  "version": "4.3.1-testing-unstable",
+  "description": "⚠️ TESTING VERSION - Contains critical bugs, do not use in production",
   "scripts": {
     "build": "tsx scripts/build.ts",
     "build:docker": "tsx scripts/build.ts --skip-lint",

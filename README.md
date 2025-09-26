@@ -1,5 +1,13 @@
 <div align="center">
 
+# ⚠️ NodeCast - TESTING VERSION - DO NOT USE IN PRODUCTION
+
+**🔬 EXPERIMENTAL FORK - CONTAINS CRITICAL BUGS**
+
+**⚠️ WARNING: This version has known critical issues that prevent normal operation. See [TESTING-STATUS.md](./TESTING-STATUS.md) for details.**
+
+---
+
 # NodeCast
 **High-Performance File Server for TrueNAS Scale**  
 *Enterprise-Grade ZFS-Optimized File Sharing*
