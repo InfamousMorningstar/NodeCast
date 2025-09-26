@@ -42,7 +42,7 @@ COPY scripts ./scripts
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV ZIPLINE_BUILD=true
 
-RUN ZIPLINE_BUILD=true pnpm run build
+RUN ZIPLINE_BUILD=true pnpm run build:docker
 
 FROM base
 

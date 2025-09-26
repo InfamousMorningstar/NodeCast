@@ -4,7 +4,13 @@
 
 import { FastifyInstance } from 'fastify';
 import { userMiddleware } from '../../../middleware/user';
-import { createSnapshot, listSnapshots, getFileVersions, restoreFile, compareVersions } from '../../../../lib/zfs/routes';
+import {
+  createSnapshot,
+  listSnapshots,
+  getFileVersions,
+  restoreFile,
+  compareVersions,
+} from '../../../../lib/zfs/routes';
 
 export const PATH = '/api/zfs';
 
