@@ -18,7 +18,7 @@ const initialData = (window as any)[NODECAST_SSR_PROP];
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-        <NodeCastSSRProvider ssrData={initialData}>
+    <NodeCastSSRProvider ssrData={initialData}>
       <RouterProvider router={router} />
     </NodeCastSSRProvider>
   </StrictMode>,

@@ -43,7 +43,7 @@ export type ApiServerPublicResponse = {
   domains?: string[];
 };
 
-const logger = log('api').c('server').c('public');
+const _logger = log('api').c('server').c('public');
 
 let tosCache: string | null = null;
 

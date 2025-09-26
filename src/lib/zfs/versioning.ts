@@ -191,7 +191,7 @@ export class ZFSVersioning {
             operation: 'modify',
           },
         });
-      } catch (error) {
+      } catch {
         // File doesn't exist in this snapshot, skip
         continue;
       }

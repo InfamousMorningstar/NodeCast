@@ -100,7 +100,7 @@ export class SyncEngine extends EventEmitter {
     });
   }
 
-  private async handleNewConnection(ws: WebSocket, request: IncomingMessage): Promise<void> {
+  private async handleNewConnection(ws: WebSocket, _request: IncomingMessage): Promise<void> {
     const clientId = this.generateClientId();
     const client: ClientConnection = {
       id: clientId,
@@ -459,7 +459,7 @@ class ConflictResolver {
     return 'server_wins';
   }
 
-  private async getRecentEvents(filePath: string, since: number): Promise<SyncEvent[]> {
+  private async getRecentEvents(_filePath: string, _since: number): Promise<SyncEvent[]> {
     // This would query the database for recent sync events
     // Simplified implementation
     return [];

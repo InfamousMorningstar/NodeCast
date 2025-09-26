@@ -82,7 +82,7 @@ export class AdvancedFileManager {
     try {
       const { stdout } = await execAsync(`getfattr -n user.nodecast.${name} --only-values "${filePath}"`);
       return stdout.trim() || null;
-    } catch (error) {
+    } catch {
       // Attribute doesn't exist
       return null;
     }
@@ -102,7 +102,7 @@ export class AdvancedFileManager {
       }
 
       return attributes;
-    } catch (error) {
+    } catch {
       return {};
     }
   }
@@ -460,7 +460,7 @@ export class AdvancedFileManager {
     }
   }
 
-  async getFileSmartFolders(fileId: string): Promise<string[]> {
+  async getFileSmartFolders(_fileId: string): Promise<string[]> {
     const smartFoldersJson = await this.getFileAttribute('', 'smart_folders');
     if (!smartFoldersJson) return [];
 

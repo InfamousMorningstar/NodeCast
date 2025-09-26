@@ -31,7 +31,7 @@ export default async function fileManagementRoutes(server: FastifyInstance) {
 
         const metadata = await fileManager.getFileMetadata(file.name);
         return reply.code(200).send({ success: true, data: metadata });
-      } catch (_error) {
+      } catch {
         return reply.code(500).send({ success: false, error: 'Failed to get file metadata' });
       }
     },
@@ -59,7 +59,7 @@ export default async function fileManagementRoutes(server: FastifyInstance) {
 
         await fileManager.tagFile(file.name, tags);
         return reply.code(200).send({ success: true, message: 'Tags added successfully' });
-      } catch (_error) {
+      } catch {
         return reply.code(500).send({ success: false, error: 'Failed to add tags' });
       }
     },
@@ -86,7 +86,7 @@ export default async function fileManagementRoutes(server: FastifyInstance) {
 
         await fileManager.removeFileTag(file.name, decodeURIComponent(tag));
         return reply.code(200).send({ success: true, message: 'Tag removed successfully' });
-      } catch (_error) {
+      } catch {
         return reply.code(500).send({ success: false, error: 'Failed to remove tag' });
       }
     },
@@ -105,7 +105,7 @@ export default async function fileManagementRoutes(server: FastifyInstance) {
 
         const files = await fileManager.searchFilesByTag(decodeURIComponent(tag), user.id);
         return reply.code(200).send({ success: true, data: files });
-      } catch (_error) {
+      } catch {
         return reply.code(500).send({ success: false, error: 'Failed to search files by tag' });
       }
     },
@@ -124,7 +124,7 @@ export default async function fileManagementRoutes(server: FastifyInstance) {
 
         const suggestions = await fileManager.suggestFileOrganization(user.id, Number(limit));
         return reply.code(200).send({ success: true, data: suggestions });
-      } catch (_error) {
+      } catch {
         return reply.code(500).send({ success: false, error: 'Failed to get organization suggestions' });
       }
     },
@@ -151,7 +151,7 @@ export default async function fileManagementRoutes(server: FastifyInstance) {
           message: `Organized ${selectedSuggestions.length} files`,
           data: { organized: selectedSuggestions.length },
         });
-      } catch (_error) {
+      } catch {
         return reply.code(500).send({ success: false, error: 'Failed to apply organization suggestions' });
       }
     },
@@ -180,7 +180,7 @@ export default async function fileManagementRoutes(server: FastifyInstance) {
           message: `Tagged ${files.length} files`,
           data: { tagged: files.length, tags },
         });
-      } catch (_error) {
+      } catch {
         return reply.code(500).send({ success: false, error: 'Failed to bulk tag files' });
       }
     },
@@ -208,7 +208,7 @@ export default async function fileManagementRoutes(server: FastifyInstance) {
 
         await fileManager.setFileAttribute(file.name, name, value);
         return reply.code(200).send({ success: true, message: 'Attribute set successfully' });
-      } catch (_error) {
+      } catch {
         return reply.code(500).send({ success: false, error: 'Failed to set file attribute' });
       }
     },
@@ -235,7 +235,7 @@ export default async function fileManagementRoutes(server: FastifyInstance) {
 
         const attributes = await fileManager.getAllFileAttributes(file.name);
         return reply.code(200).send({ success: true, data: attributes });
-      } catch (_error) {
+      } catch {
         return reply.code(500).send({ success: false, error: 'Failed to get file attributes' });
       }
     },
@@ -274,7 +274,7 @@ export default async function fileManagementRoutes(server: FastifyInstance) {
             })),
           },
         });
-      } catch (_error) {
+      } catch {
         return reply.code(500).send({ success: false, error: 'Failed to get auto-generated tags' });
       }
     },
@@ -316,7 +316,7 @@ export default async function fileManagementRoutes(server: FastifyInstance) {
             })),
           },
         });
-      } catch (_error) {
+      } catch {
         return reply.code(500).send({ success: false, error: 'Failed to evaluate smart folders' });
       }
     },
@@ -355,7 +355,7 @@ export default async function fileManagementRoutes(server: FastifyInstance) {
             createdAt: tag.createdAt,
           })),
         });
-      } catch (_error) {
+      } catch {
         return reply.code(500).send({ success: false, error: 'Failed to get tags' });
       }
     },

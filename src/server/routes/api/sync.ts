@@ -24,7 +24,7 @@ export default async function syncRoutes(server: FastifyInstance) {
           success: true,
           data: status,
         });
-      } catch (error) {
+      } catch {
         return reply.code(500).send({
           success: false,
           error: 'Failed to get sync status',
@@ -53,7 +53,7 @@ export default async function syncRoutes(server: FastifyInstance) {
             isConnected: userConnections > 0,
           },
         });
-      } catch (error) {
+      } catch {
         return reply.code(500).send({
           success: false,
           error: 'Failed to get client information',
@@ -86,7 +86,7 @@ export default async function syncRoutes(server: FastifyInstance) {
           success: true,
           message: 'Message broadcasted successfully',
         });
-      } catch (error) {
+      } catch {
         return reply.code(500).send({
           success: false,
           error: 'Failed to broadcast message',
@@ -115,7 +115,7 @@ export default async function syncRoutes(server: FastifyInstance) {
             protocols: ['sync-v1'],
           },
         });
-      } catch (error) {
+      } catch {
         return reply.code(500).send({
           success: false,
           error: 'Failed to get connection info',
@@ -152,7 +152,7 @@ export default async function syncRoutes(server: FastifyInstance) {
           success: true,
           message: 'Force sync initiated',
         });
-      } catch (error) {
+      } catch {
         return reply.code(500).send({
           success: false,
           error: 'Failed to initiate force sync',
@@ -206,7 +206,7 @@ export default async function syncRoutes(server: FastifyInstance) {
             },
           },
         });
-      } catch (error) {
+      } catch {
         return reply.code(500).send({
           success: false,
           error: 'Failed to get sync statistics',

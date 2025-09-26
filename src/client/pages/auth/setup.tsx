@@ -116,133 +116,392 @@ export function Component() {
   };
 
   return (
-    <>
-      <Paper withBorder p='xs' m='sm'>
-        <Stepper active={active} onStepClick={setActive} m='md'>
-          <Stepper.Step label='Welcome!' description='Setup NodeCast'>
-            <Title>Welcome to NodeCast!</Title>
-            <SimpleGrid spacing='md' cols={{ base: 1, sm: 1 }}>
-              <Paper withBorder p='sm' my='sm' h='100%'>
-                <Title order={2}>Documentation</Title>
-                <Text>Here are a couple of useful documentation links to get you started with NodeCast:</Text>
-
-                <Stack mt='xs'>
-                  <LinkToDoc href='https://github.com/InfamousMorningstar/NodeCast' title='Configuration'>
-                    Configuring NodeCast to your needs
-                  </LinkToDoc>
-
-                  <LinkToDoc href='https://github.com/InfamousMorningstar/NodeCast#readme' title='NodeCast Documentation'>
-                    NodeCast Enterprise File Server Documentation
-                  </LinkToDoc>
-                </Stack>
-              </Paper>
-
-              <Paper withBorder p='sm' my='sm' h='100%'>
-                <Title order={2}>Configuration</Title>
-
-                <Text>
-                  Most of NodeCast&apos;s configuration is now managed through the dashboard. Once you login as
-                  a super-admin, you can click on your username in the top right corner and select
-                  &quot;Server Settings&quot; to configure your instance. The only exception to this is a few
-                  sensitive environment variables that must be set in order for NodeCast to run. To change
-                  this, depending on the setup, you can either edit the <Code>.env</Code> or{' '}
-                  <Code>docker-compose.yml</Code> file.
+    <div style={{ 
+      minHeight: '100vh', 
+      background: 'var(--modern-bg-primary)',
+      position: 'relative',
+      overflow: 'hidden'
+    }}>
+      {/* Background effects */}
+      <div style={{
+        position: 'absolute',
+        top: '20%',
+        right: '10%',
+        width: '400px',
+        height: '400px',
+        background: 'var(--modern-accent-gradient)',
+        borderRadius: '50%',
+        opacity: '0.1',
+        filter: 'blur(100px)',
+        pointerEvents: 'none'
+      }} />
+      <div style={{
+        position: 'absolute',
+        bottom: '20%',
+        left: '10%',
+        width: '300px',
+        height: '300px',
+        background: 'var(--modern-primary-gradient)',
+        borderRadius: '50%',
+        opacity: '0.1',
+        filter: 'blur(80px)',
+        pointerEvents: 'none'
+      }} />
+      
+      {/* Main content */}
+      <div style={{
+        position: 'relative',
+        zIndex: 1,
+        maxWidth: '800px',
+        margin: '0 auto',
+        padding: '2rem'
+      }}>
+        {/* Modern glass card */}
+        <div className="glass-card" style={{
+          padding: '2rem',
+          marginTop: '2rem',
+          background: 'var(--modern-glass-bg)',
+          backdropFilter: 'var(--modern-backdrop-blur)',
+          border: 'var(--modern-glass-border)',
+          borderRadius: 'var(--modern-radius-xl)',
+          boxShadow: 'var(--modern-shadow-xl)'
+        }}>
+          <Stepper 
+            active={active} 
+            onStepClick={setActive} 
+            styles={{
+              step: {
+                backgroundColor: 'var(--modern-surface-secondary)',
+                border: '1px solid var(--modern-border)',
+                borderRadius: 'var(--modern-radius-lg)'
+              },
+              stepIcon: {
+                backgroundColor: 'var(--modern-accent-primary)',
+                color: 'var(--modern-text-primary)',
+                border: 'none'
+              },
+              stepCompletedIcon: {
+                backgroundColor: 'var(--modern-success)',
+                color: 'white'
+              },
+              stepLabel: {
+                color: 'var(--modern-text-primary)',
+                fontWeight: 600,
+                fontSize: '1.1rem'
+              },
+              stepDescription: {
+                color: 'var(--modern-text-secondary)'
+              },
+              separator: {
+                backgroundColor: 'var(--modern-border)'
+              }
+            }}
+          >
+            <Stepper.Step label='Welcome!' description='Setup NodeCast'>
+              <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                <Title 
+                  order={1} 
+                  style={{ 
+                    background: 'var(--modern-text-gradient)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    fontSize: '3rem',
+                    fontWeight: 700,
+                    marginBottom: '0.5rem'
+                  }}
+                >
+                  Welcome to NodeCast!
+                </Title>
+                <Text size="lg" c="var(--modern-text-secondary)">
+                  Let's get your high-performance file server ready
                 </Text>
+              </div>
 
-                <Text>
-                  To see all of the available environment variables, please refer to the documentation{' '}
-                  <Anchor
-                    href='https://github.com/InfamousMorningstar/NodeCast#configuration'
-                    target='_blank'
-                    rel='noopener noreferrer'
+              <SimpleGrid spacing='xl' cols={{ base: 1, sm: 2 }}>
+                <div className="glass-card" style={{
+                  padding: '1.5rem',
+                  background: 'var(--modern-glass-subtle)',
+                  border: 'var(--modern-glass-border)',
+                  borderRadius: 'var(--modern-radius-lg)',
+                  height: '100%'
+                }}>
+                  <Title 
+                    order={3} 
+                    style={{ 
+                      color: 'var(--modern-text-primary)', 
+                      marginBottom: '1rem',
+                      fontSize: '1.5rem'
+                    }}
                   >
-                    here.
-                  </Anchor>
-                </Text>
-              </Paper>
-            </SimpleGrid>
+                    📚 Documentation
+                  </Title>
+                  <Text c="var(--modern-text-secondary)" mb="md">
+                    Essential resources to get you started with NodeCast:
+                  </Text>
 
-            <Button
-              mt='xl'
-              fullWidth
-              rightSection={<IconArrowForwardUp size='1.25rem' />}
-              size='lg'
-              variant='default'
-              onClick={nextStep}
-            >
-              Continue
-            </Button>
-          </Stepper.Step>
-          <Stepper.Step label='Create user' description='Create a super-admin account'>
-            <Stack gap='lg'>
-              <Title order={2}>Create your super-admin account</Title>
+                  <Stack gap="sm">
+                    <LinkToDoc href='https://github.com/InfamousMorningstar/NodeCast' title='Configuration'>
+                      Configuring NodeCast to your needs
+                    </LinkToDoc>
 
-              <TextInput
-                label='Username'
-                placeholder='Enter a username...'
-                {...form.getInputProps('username')}
-              />
+                    <LinkToDoc
+                      href='https://github.com/InfamousMorningstar/NodeCast#readme'
+                      title='NodeCast Documentation'
+                    >
+                      Complete setup and usage guide
+                    </LinkToDoc>
+                  </Stack>
+                </div>
 
-              <PasswordInput
-                label='Password'
-                placeholder='Enter a password...'
-                {...form.getInputProps('password')}
-              />
-            </Stack>
+                <div className="glass-card" style={{
+                  padding: '1.5rem',
+                  background: 'var(--modern-glass-subtle)',
+                  border: 'var(--modern-glass-border)',
+                  borderRadius: 'var(--modern-radius-lg)',
+                  height: '100%'
+                }}>
+                  <Title 
+                    order={3} 
+                    style={{ 
+                      color: 'var(--modern-text-primary)', 
+                      marginBottom: '1rem',
+                      fontSize: '1.5rem'
+                    }}
+                  >
+                    ⚙️ Configuration
+                  </Title>
+                  
+                  <Text c="var(--modern-text-secondary)" mb="sm">
+                    Most configuration is managed through the dashboard. As a super-admin, click your username → 
+                    <strong> Server Settings</strong> to configure your instance.
+                  </Text>
 
-            <Group justify='space-between' my='lg'>
+                  <Text c="var(--modern-text-secondary)" mb="sm">
+                    Environment variables can be edited in <Code>.env</Code> or <Code>docker-compose.yml</Code> files.
+                  </Text>
+
+                  <Text c="var(--modern-text-secondary)">
+                    View all available options in our{' '}
+                    <Anchor
+                      href='https://github.com/InfamousMorningstar/NodeCast#configuration'
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      style={{ color: 'var(--modern-accent-primary)' }}
+                    >
+                      configuration guide
+                    </Anchor>
+                  </Text>
+                </div>
+              </SimpleGrid>
+
               <Button
-                leftSection={<IconArrowBackUp size='1.25rem' />}
-                size='lg'
-                variant='default'
-                onClick={prevStep}
-              >
-                Back
-              </Button>
-
-              <Button
+                mt='xl'
+                fullWidth
                 rightSection={<IconArrowForwardUp size='1.25rem' />}
                 size='lg'
-                variant='default'
                 onClick={nextStep}
-                disabled={!form.isValid()}
+                styles={{
+                  root: {
+                    background: 'var(--modern-accent-gradient)',
+                    border: 'none',
+                    color: 'white',
+                    fontWeight: 600,
+                    fontSize: '1.1rem',
+                    height: '50px',
+                    borderRadius: 'var(--modern-radius-lg)',
+                    transition: 'all 0.2s ease'
+                  }
+                }}
               >
                 Continue
               </Button>
-            </Group>
-          </Stepper.Step>
-          <Stepper.Completed>
-            <Title order={2}>Setup complete!</Title>
+            </Stepper.Step>
+            
+            <Stepper.Step label='Create user' description='Create a super-admin account'>
+              <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                <Title 
+                  order={2} 
+                  style={{ 
+                    color: 'var(--modern-text-primary)',
+                    fontSize: '2rem',
+                    fontWeight: 600,
+                    marginBottom: '0.5rem'
+                  }}
+                >
+                  Create your super-admin account
+                </Title>
+                <Text size="lg" c="var(--modern-text-secondary)">
+                  This account will have full administrative privileges
+                </Text>
+              </div>
 
-            <Text>
-              Clicking &quot;Finish&quot; below will create your super-admin account and log you in. You will
-              be redirected to the dashboard shortly after that.
-            </Text>
-            <Group justify='space-between' my='lg'>
-              <Button
-                leftSection={<IconArrowBackUp size='1.25rem' />}
-                size='lg'
-                variant='default'
-                onClick={prevStep}
-                loading={loading}
-              >
-                Back
-              </Button>
+              <Stack gap='lg' maw={400} mx="auto">
+                <TextInput
+                  label='Username'
+                  placeholder='Enter a username...'
+                  size="lg"
+                  styles={{
+                    label: { color: 'var(--modern-text-primary)', fontWeight: 600 },
+                    input: {
+                      backgroundColor: 'var(--modern-surface-secondary)',
+                      border: '1px solid var(--modern-border)',
+                      borderRadius: 'var(--modern-radius-md)',
+                      color: 'var(--modern-text-primary)',
+                      '&:focus': {
+                        borderColor: 'var(--modern-accent-primary)',
+                        boxShadow: '0 0 0 1px var(--modern-accent-primary)'
+                      }
+                    }
+                  }}
+                  {...form.getInputProps('username')}
+                />
 
-              <Button
-                rightSection={<IconCheck size='1.25rem' />}
-                size='lg'
-                variant='default'
-                loading={loading}
-                onClick={() => form.onSubmit(onSubmit)()}
-              >
-                Finish
-              </Button>
-            </Group>
-          </Stepper.Completed>
-        </Stepper>
-      </Paper>
-    </>
+                <PasswordInput
+                  label='Password'
+                  placeholder='Enter a secure password...'
+                  size="lg"
+                  styles={{
+                    label: { color: 'var(--modern-text-primary)', fontWeight: 600 },
+                    input: {
+                      backgroundColor: 'var(--modern-surface-secondary)',
+                      border: '1px solid var(--modern-border)',
+                      borderRadius: 'var(--modern-radius-md)',
+                      color: 'var(--modern-text-primary)',
+                      '&:focus': {
+                        borderColor: 'var(--modern-accent-primary)',
+                        boxShadow: '0 0 0 1px var(--modern-accent-primary)'
+                      }
+                    },
+                    innerInput: {
+                      backgroundColor: 'transparent'
+                    }
+                  }}
+                  {...form.getInputProps('password')}
+                />
+              </Stack>
+
+              <Group justify='space-between' mt='2rem'>
+                <Button
+                  leftSection={<IconArrowBackUp size='1.25rem' />}
+                  size='lg'
+                  onClick={prevStep}
+                  variant="outline"
+                  styles={{
+                    root: {
+                      borderColor: 'var(--modern-border)',
+                      color: 'var(--modern-text-secondary)',
+                      backgroundColor: 'transparent',
+                      '&:hover': {
+                        backgroundColor: 'var(--modern-surface-secondary)',
+                        borderColor: 'var(--modern-accent-primary)'
+                      }
+                    }
+                  }}
+                >
+                  Back
+                </Button>
+
+                <Button
+                  rightSection={<IconArrowForwardUp size='1.25rem' />}
+                  size='lg'
+                  onClick={nextStep}
+                  disabled={!form.isValid()}
+                  styles={{
+                    root: {
+                      background: form.isValid() ? 'var(--modern-accent-gradient)' : 'var(--modern-surface-secondary)',
+                      border: 'none',
+                      color: form.isValid() ? 'white' : 'var(--modern-text-muted)',
+                      fontWeight: 600,
+                      '&:disabled': {
+                        backgroundColor: 'var(--modern-surface-secondary)',
+                        color: 'var(--modern-text-muted)'
+                      }
+                    }
+                  }}
+                >
+                  Continue
+                </Button>
+              </Group>
+            </Stepper.Step>
+            
+            <Stepper.Completed>
+              <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                <Title 
+                  order={2} 
+                  style={{ 
+                    color: 'var(--modern-text-primary)',
+                    fontSize: '2rem',
+                    fontWeight: 600,
+                    marginBottom: '0.5rem'
+                  }}
+                >
+                  🎉 Setup Complete!
+                </Title>
+                <Text size="lg" c="var(--modern-text-secondary)">
+                  Ready to launch your NodeCast file server
+                </Text>
+              </div>
+
+              <div className="glass-card" style={{
+                padding: '1.5rem',
+                background: 'var(--modern-glass-subtle)',
+                border: 'var(--modern-glass-border)',
+                borderRadius: 'var(--modern-radius-lg)',
+                textAlign: 'center',
+                marginBottom: '2rem'
+              }}>
+                <Text c="var(--modern-text-secondary)" size="lg">
+                  Clicking <strong>Finish</strong> will create your super-admin account and redirect you to the dashboard.
+                  Welcome to the future of file sharing! 🚀
+                </Text>
+              </div>
+              
+              <Group justify='space-between'>
+                <Button
+                  leftSection={<IconArrowBackUp size='1.25rem' />}
+                  size='lg'
+                  onClick={prevStep}
+                  loading={loading}
+                  variant="outline"
+                  styles={{
+                    root: {
+                      borderColor: 'var(--modern-border)',
+                      color: 'var(--modern-text-secondary)',
+                      backgroundColor: 'transparent',
+                      '&:hover': {
+                        backgroundColor: 'var(--modern-surface-secondary)',
+                        borderColor: 'var(--modern-accent-primary)'
+                      }
+                    }
+                  }}
+                >
+                  Back
+                </Button>
+
+                <Button
+                  rightSection={<IconCheck size='1.25rem' />}
+                  size='lg'
+                  loading={loading}
+                  onClick={() => form.onSubmit(onSubmit)()}
+                  styles={{
+                    root: {
+                      background: 'var(--modern-success-gradient)',
+                      border: 'none',
+                      color: 'white',
+                      fontWeight: 600,
+                      fontSize: '1.1rem',
+                      minWidth: '140px'
+                    }
+                  }}
+                >
+                  Finish
+                </Button>
+              </Group>
+            </Stepper.Completed>
+          </Stepper>
+        </div>
+      </div>
+    </div>
   );
 }
 

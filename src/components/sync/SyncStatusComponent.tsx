@@ -76,7 +76,7 @@ export function SyncStatusComponent({
       }
     });
 
-    client.on('sync_batch', (events: any[], hasMore: boolean) => {
+    client.on('sync_batch', (events: any[], _hasMore: boolean) => {
       events.forEach((event) => onSyncEvent?.(event));
     });
 

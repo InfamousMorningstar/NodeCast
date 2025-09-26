@@ -19,6 +19,9 @@ import midnight_orange from './builtins/midnight_orange.theme.json';
 import midnight_blue from './builtins/midnight_blue.theme.json';
 import midnight_purple from './builtins/midnight_purple.theme.json';
 
+import modern_dark from './builtins/modern_dark';
+import modern_light from './builtins/modern_light';
+
 import { log } from '../logger';
 
 const THEMES_DIR = './themes';
@@ -58,6 +61,10 @@ export async function readThemes(): Promise<NodeCastTheme[]> {
     handleOverrideColors(midnight_orange as unknown as NodeCastTheme),
     handleOverrideColors(midnight_blue as unknown as NodeCastTheme),
     handleOverrideColors(midnight_purple as unknown as NodeCastTheme),
+
+    // Modern themes
+    handleOverrideColors(modern_dark as unknown as NodeCastTheme),
+    handleOverrideColors(modern_light as unknown as NodeCastTheme),
   );
 
   return parsedThemes;
