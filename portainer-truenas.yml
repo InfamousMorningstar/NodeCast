@@ -25,7 +25,7 @@ services:
 
   # NodeCast Application
   nodecast:
-    image: ghcr.io/infamousmorningstar/nodecast:latest  # Will need to be built and pushed
+    image: morningstar0/nodecast:latest  # Built and pushed from GitHub Actions
     container_name: nodecast-app
     restart: unless-stopped
     user: "568:568"  # Run as standard container user
