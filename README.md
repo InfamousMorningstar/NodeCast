@@ -57,7 +57,27 @@ NodeCast is a high-performance file sharing and URL shortening server specifical
 - **ZFS Integration** - Monitor pool health and performance
 - **Container Metrics** - Docker resource usage tracking
 
-## 🏗️ Quick Start for TrueNAS Scale
+## 🚀 Quick Installation
+
+### Simple Docker Compose (Recommended)
+```bash
+# Download files
+curl -o docker-compose.yml https://raw.githubusercontent.com/InfamousMorningstar/NodeCast/trunk/docker-compose.yml
+curl -o .env.example https://raw.githubusercontent.com/InfamousMorningstar/NodeCast/trunk/.env.example
+
+# Configure
+cp .env.example .env
+nano .env  # Set POSTGRES_PASSWORD and CORE_SECRET
+
+# Deploy
+docker-compose up -d
+```
+
+**🌐 Access**: `http://your-server-ip:3000`
+
+👉 **[Complete Installation Guide](./INSTALL.md)** for TrueNAS Scale, Portainer, and advanced setups.
+
+## 🏗️ TrueNAS Scale Installation
 
 ### Prerequisites
 - TrueNAS Scale 22.12.0 or higher
@@ -65,19 +85,30 @@ NodeCast is a high-performance file sharing and URL shortening server specifical
 - (Recommended) Dedicated SLOG device (NVMe SSD)
 - (Recommended) L2ARC cache device
 
-### Installation
+### Quick TrueNAS Setup
 
-1. **Clone the repository:**
+1. **Download NodeCast:**
    ```bash
-   cd /mnt/pool
-   git clone https://github.com/InfamousMorningstar/NodeCast.git nodecast
-   cd nodecast
+   cd /mnt/your-pool
+   curl -o docker-compose.yml https://raw.githubusercontent.com/InfamousMorningstar/NodeCast/trunk/docker-compose.yml
+   curl -o .env.example https://raw.githubusercontent.com/InfamousMorningstar/NodeCast/trunk/.env.example
    ```
 
-2. **Set up TrueNAS datasets:**
-   See `TrueNAS-Deployment-Guide.md` for ZFS dataset setup and permissions.
+2. **Create ZFS datasets:**
+   ```bash
+   zfs create your-pool/nodecast
+   zfs create your-pool/nodecast/uploads
+   zfs create your-pool/nodecast/config
+   chown -R 568:568 /mnt/your-pool/nodecast
+   ```
 
-3. **Deploy with Docker Compose:**
+3. **Configure environment:**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your settings (see INSTALL.md for details)
+   ```
+
+4. **Deploy:**
    ```bash
    # Copy the TrueNAS optimized configuration
    cp docker-compose.truenas.yml docker-compose.yml
