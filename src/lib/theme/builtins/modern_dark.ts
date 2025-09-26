@@ -74,12 +74,57 @@ const modern_dark = {
   extraCss: `
     /* Modern Dark Theme Custom Styles */
     
+    :root {
+      /* Modern color palette */
+      --modern-bg-primary: #0f172a;
+      --modern-bg-secondary: #1e293b;
+      --modern-surface-primary: rgba(15, 23, 42, 0.8);
+      --modern-surface-secondary: rgba(30, 41, 59, 0.6);
+      --modern-text-primary: #f8fafc;
+      --modern-text-secondary: #cbd5e1;
+      --modern-text-muted: #64748b;
+      --modern-border: rgba(148, 163, 184, 0.1);
+      --modern-accent-primary: #6366f1;
+      --modern-success: #10b981;
+      
+      /* Modern gradients */
+      --modern-accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      --modern-primary-gradient: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+      --modern-success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --modern-text-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      
+      /* Modern glass effects */
+      --modern-glass-bg: rgba(15, 23, 42, 0.4);
+      --modern-glass-subtle: rgba(30, 41, 59, 0.3);
+      --modern-glass-border: 1px solid rgba(148, 163, 184, 0.1);
+      --modern-backdrop-blur: blur(20px);
+      
+      /* Modern spacing and sizing */
+      --modern-radius-sm: 8px;
+      --modern-radius-md: 12px;
+      --modern-radius-lg: 16px;
+      --modern-radius-xl: 20px;
+      --modern-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+      --modern-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --modern-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --modern-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    
     /* Glassmorphism effects */
     .glass-card {
-      background: rgba(15, 23, 42, 0.7);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(99, 102, 241, 0.2);
-      border-radius: 12px;
+      background: var(--modern-glass-bg);
+      backdrop-filter: var(--modern-backdrop-blur);
+      border: var(--modern-glass-border);
+      border-radius: var(--modern-radius-lg);
+      box-shadow: var(--modern-shadow-lg);
+      transition: all 0.2s ease;
+    }
+    
+    .glass-card:hover {
+      background: rgba(30, 41, 59, 0.5);
+      border-color: rgba(148, 163, 184, 0.2);
+      transform: translateY(-2px);
+      box-shadow: var(--modern-shadow-xl);
     }
     
     .glass-sidebar {

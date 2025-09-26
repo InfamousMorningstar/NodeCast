@@ -96,8 +96,8 @@ FEATURES_THUMBNAILS_ENABLED=true
 
 ```bash
 cd /mnt/pool/nodecast
-wget https://raw.githubusercontent.com/InfamousMorningstar/NodeCase/trunk/docker-compose.truenas.yml
-docker-compose -f docker-compose.truenas.yml up -d
+cp docker-compose.truenas.yml docker-compose.yml
+docker-compose up -d
 ```
 
 ## ⚡ Performance Optimization

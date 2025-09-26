@@ -75,19 +75,15 @@ NodeCast is a high-performance file sharing and URL shortening server specifical
    ```
 
 2. **Set up TrueNAS datasets:**
-   ```bash
-   chmod +x setup-truenas-datasets.sh
-   sudo ./setup-truenas-datasets.sh
-   ```
+   See `TrueNAS-Deployment-Guide.md` for ZFS dataset setup and permissions.
 
 3. **Deploy with Docker Compose:**
    ```bash
    # Copy the TrueNAS optimized configuration
-   cp portainer-truenas.yml docker-compose.yml
+   cp docker-compose.truenas.yml docker-compose.yml
    
-   # Set environment variables
-   export POSTGRES_PASSWORD="your_secure_password"
-   export CORE_SECRET="your_32_character_secret_key_here"
+   # Set environment variables in your .env file
+   # Edit .env with your configuration
    
    # Deploy the stack
    docker-compose up -d

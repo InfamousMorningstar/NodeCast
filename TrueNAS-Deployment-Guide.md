@@ -64,7 +64,7 @@ The repository includes GitHub Actions that will automatically build and push to
 2. Navigate to "Stacks"
 3. Click "Add stack"
 4. Name it "nodecast"
-5. Paste the contents of `portainer-truenas.yml`
+5. Paste the contents of `docker-compose.truenas.yml`
 6. Configure environment variables in Portainer UI
 7. Deploy the stack
 

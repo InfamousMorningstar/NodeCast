@@ -5,6 +5,7 @@ import {
   Anchor,
   Button,
   Code,
+  Group,
   PasswordInput,
   Stack,
   Stepper,
@@ -45,71 +46,55 @@ export async function loader() {
 export function Component() {
   useTitle('Setup');
 
+  const [active, setActive] = useState(0);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const [active, setActive] = useState(0);
-  const nextStep = () => setActive((current) => (current < 3 ? current + 1 : current));
-  const prevStep = () => setActive((current) => (current > 0 ? current - 1 : current));
-
-  const [loading, setLoading] = useState(false);
-
   const form = useForm({
+    mode: 'uncontrolled',
     initialValues: {
       username: '',
       password: '',
     },
     validate: {
-      username: (value) => (value.length < 1 ? 'Username is required' : null),
-      password: (value) => (value.length < 1 ? 'Password is required' : null),
+      username: (value) => (value.length < 1 ? 'Username must have at least 1 character' : null),
+      password: (value) => (value.length < 1 ? 'Password must have at least 1 character' : null),
     },
   });
 
-  const onSubmit = async (values: typeof form.values) => {
+  const nextStep = () => setActive((current) => (current < 2 ? current + 1 : current));
+  const prevStep = () => setActive((current) => (current > 0 ? current - 1 : current));
+
+  const onSubmit = async (values: { username: string; password: string }) => {
     setLoading(true);
 
-    const { error } = await fetchApi('/api/setup', 'POST', {
-      username: values.username,
-      password: values.password,
+    const res = await fetchApi<Response['/api/auth/setup']>('/api/auth/setup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(values),
     });
 
-    if (error) {
+    if (res.success) {
+      await mutate('/api/user/me');
       notifications.show({
-        title: 'Error',
-        message: error.error,
+        title: 'Success!',
+        message: 'Your account has been created successfully.',
+        color: 'green',
+        icon: <IconCheck size='1rem' />,
+      });
+
+      navigate('/dashboard');
+    } else {
+      notifications.show({
+        title: 'Failed to create user',
+        message: res.error,
         color: 'red',
         icon: <IconX size='1rem' />,
       });
-
-      setLoading(false);
-      setActive(2);
-    } else {
-      notifications.show({
-        title: 'Setup complete!',
-        message: 'Logging in to new user...',
-        color: 'green',
-        loading: true,
-      });
-
-      const { data, error } = await fetchApi<Response['/api/auth/login']>('/api/auth/login', 'POST', {
-        username: values.username,
-        password: values.password,
-      });
-
-      if (error) {
-        notifications.show({
-          title: 'Error',
-          message: error.error,
-          color: 'red',
-          icon: <IconX size='1rem' />,
-        });
-
-        setLoading(false);
-        setActive(2);
-      } else {
-        mutate('/api/user', data as Response['/api/user']);
-        navigate('/dashboard');
-      }
     }
+    setLoading(false);
   };
 
   return (
@@ -441,5 +426,3 @@ export function Component() {
     </div>
   );
 }
-
-Component.displayName = 'Setup';

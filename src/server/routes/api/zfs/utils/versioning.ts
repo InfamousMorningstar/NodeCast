@@ -263,3 +263,13 @@ export async function compareVersions(req: FastifyRequest, res: FastifyReply) {
     });
   }
 }
+
+// Default export for route registration
+export default async function (fastify: any) {
+  // Register routes
+  fastify.post('/snapshots', createSnapshot);
+  fastify.get('/snapshots', listSnapshots);
+  fastify.get('/file-versions', getFileVersions);
+  fastify.post('/restore', restoreFile);
+  fastify.post('/compare', compareVersions);
+}
