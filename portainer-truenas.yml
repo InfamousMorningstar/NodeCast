@@ -84,7 +84,8 @@ services:
       - /mnt/app-pool/nodecast/themes:/nodecast/themes
       - /mnt/app-pool/nodecast/config:/nodecast/config
       
-      # ZFS Management (requires privileged mode for ZFS operations)
+      # ZFS Management (uses host ZFS tools via volume mounts)
+      # Note: ZFS tools are accessed from TrueNAS Scale host, not installed in container
       - /sbin/zfs:/sbin/zfs:ro
       - /proc:/proc:ro
       

@@ -1,13 +1,11 @@
 FROM node:22-alpine3.21 AS base
 
-# Install system dependencies for NodeCast
+# Install system dependencies for NodeCast (removed ZFS as it's not available in Alpine)
 RUN apk add --no-cache \
     ffmpeg \
     tzdata \
-    zfs \
-    zfs-utils \
     util-linux \
-    doas \
+    wget \
     && rm -rf /var/cache/apk/*
 
 ENV PNPM_HOME="/pnpm"

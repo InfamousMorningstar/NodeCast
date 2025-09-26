@@ -40,16 +40,29 @@ if [ $? -eq 0 ]; then
     echo "✅ NodeCast Docker image built successfully!"
     echo "🏷️  Image name: $IMAGE_NAME"
     echo ""
-    echo "🔧 Next steps:"
+    echo "� Image details:"
+    docker images | grep nodecast
+    echo ""
+    echo "�🔧 Next steps:"
     echo "1. Update your portainer-truenas.yml to use: $IMAGE_NAME"
     echo "2. Deploy via Portainer"
     echo "3. Access NodeCast at: http://192.168.1.113:3000"
     echo ""
     echo "📝 To use this image in Portainer:"
     echo "   Replace 'ghcr.io/infamousmorningstar/nodecast:latest' with '$IMAGE_NAME'"
+    echo "   Or use the provided 'portainer-truenas-local.yml' file"
 else
+    echo ""
     echo "❌ Docker build failed"
-    echo "Check the build logs above for errors"
+    echo ""
+    echo "🔧 Common fixes:"
+    echo "1. Check Docker daemon is running: systemctl status docker"
+    echo "2. Check disk space: df -h"
+    echo "3. Retry the build: docker build -t $IMAGE_NAME ."
+    echo "4. Check build logs above for specific errors"
+    echo ""
+    echo "🔄 To retry with verbose output:"
+    echo "   cd $BUILD_DIR && docker build -t $IMAGE_NAME --progress=plain ."
     exit 1
 fi
 
