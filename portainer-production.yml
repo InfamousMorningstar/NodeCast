@@ -147,7 +147,10 @@ services:
 
   # NodeCast Application - Main service
   nodecast:
-    image: ghcr.io/infamousmorningstar/nodecast:latest  # Use GitHub Container Registry
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    image: nodecast:production  # Built locally from source
     container_name: nodecast-app
     hostname: nodecast-app
     restart: unless-stopped
