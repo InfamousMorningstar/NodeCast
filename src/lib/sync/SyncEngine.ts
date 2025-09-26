@@ -1,7 +1,7 @@
 import { WebSocketServer, WebSocket } from 'ws';
 import { EventEmitter } from 'events';
 import { IncomingMessage } from 'http';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@/prisma/client';
 import { createHash } from 'crypto';
 import { log } from '../logger';
 

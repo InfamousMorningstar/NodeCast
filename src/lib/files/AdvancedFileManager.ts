@@ -2,7 +2,11 @@ import { promises as fs } from 'fs';
 import { join, dirname, basename, extname } from 'path';
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { PrismaClient } from '@prisma/client';
+import { FileVersion, Prisma, User, File, Folder } from '@/prisma/client';
+import { ZfsSnapshot, Tag } from '@/prisma/client';
+import { UserQuota, SyncEvent } from '@/prisma/client';
+import { PrismaClient } from '@/prisma/client';
+import { SnapshotPolicy } from '@/prisma/client';
 import { log } from '../logger';
 
 const execAsync = promisify(exec);

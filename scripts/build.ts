@@ -3,6 +3,7 @@ import { lintStep } from './lint';
 
 // Check for skip-lint flag before running steps
 const skipLint = process.argv.includes('--skip-lint');
+const isDockerBuild = !!process.env.NODECAST_BUILD;
 
 run(
   'build',
@@ -10,7 +11,7 @@ run(
   // Conditionally include linting step
   ...(skipLint ? [] : [lintStep]),
   step('prisma', 'prisma generate'),
-  step('typecheck', 'tsc', () => !process.argv.includes('--skip')),
+  step('typecheck', 'tsc', () => !process.argv.includes('--skip') && !isDockerBuild),
 
   // builds
   step('server', 'tsup'),
