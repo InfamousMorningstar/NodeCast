@@ -5,7 +5,7 @@ import { metadataSchema } from './models/incompleteFile';
 import { metricDataSchema } from './models/metric';
 import { userViewSchema } from './models/user';
 
-const building = !!process.env.ZIPLINE_BUILD;
+const building = !!process.env.NODECAST_BUILD;
 
 let prisma: ExtendedPrismaClient;
 

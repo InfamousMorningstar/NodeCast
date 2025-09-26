@@ -1,15 +1,14 @@
 import { run, step } from '.';
 import { lintStep } from './lint';
 
+// Check for skip-lint flag before running steps
 const skipLint = process.argv.includes('--skip-lint');
 
 run(
   'build',
 
-  // Skip linting if --skip-lint flag is present
-  skipLint ? 
-    step('lint', 'echo "Skipping lint step"') : 
-    lintStep,
+  // Conditionally include linting step
+  ...(skipLint ? [] : [lintStep]),
   step('prisma', 'prisma generate'),
   step('typecheck', 'tsc', () => !process.argv.includes('--skip')),
 

@@ -10,7 +10,7 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace NodeJS {
     interface ProcessEnv {
-      ZIPLINE_BUILD?: string;
+      NODECAST_BUILD?: string;
       ZIPLINE_DB_LOG?: string;
       ZIPLINE_OVERRIDE_DISABLED_WORKER_LOG?: string;
     }
@@ -340,7 +340,7 @@ export type Config = z.infer<typeof schema>;
 const logger = log('config').c('validate');
 
 export function validateConfigObject(env: ParsedConfig): Config {
-  const building = !!process.env.ZIPLINE_BUILD;
+  const building = !!process.env.NODECAST_BUILD;
 
   if (building) {
     logger.debug('building, skipping validation');

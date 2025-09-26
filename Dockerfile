@@ -39,10 +39,9 @@ COPY code.json ./code.json
 COPY vite-env.d.ts ./vite-env.d.ts
 COPY scripts ./scripts
 
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV ZIPLINE_BUILD=true
+ENV NODECAST_BUILD=1
 
-RUN ZIPLINE_BUILD=true pnpm run build:docker
+RUN pnpm run build:docker
 
 FROM base
 
