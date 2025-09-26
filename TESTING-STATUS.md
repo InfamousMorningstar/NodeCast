@@ -46,6 +46,7 @@ This fork is currently undergoing major debugging and refactoring. Multiple crit
   docker-compose.truenas.yml (TrueNAS-specific, causing confusion)
   Dockerfile.truenas (redundant TrueNAS variant)
   .env.production (redundant production config)
+  tsconfig.build.json (redundant, tsup handles building)
   ```
 - **Remaining Files**:
   ```
@@ -53,6 +54,8 @@ This fork is currently undergoing major debugging and refactoring. Multiple crit
   docker-compose.dev.yml (development only)
   Dockerfile (main)
   Dockerfile.production (production build)
+  tsconfig.json (single TypeScript config)
+  tsup.config.ts (build configuration)
   .env.example (template)
   .env (local config, gitignored)
   ```

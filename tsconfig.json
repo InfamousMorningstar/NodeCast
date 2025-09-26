@@ -1,23 +1,40 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
+    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "noEmit": true,
     "incremental": true,
+    "sourceMap": true,
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
-    }
+      "@/*": ["./src/*"],
+      "~/*": ["./src/*"]
+    },
+    "types": ["node"],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
-  "include": ["vite-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "uploads", "build"]
+  "include": [
+    "src/**/*",
+    "scripts/**/*",
+    "vite-env.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "build",
+    "uploads",
+    "temp",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ]
 }
