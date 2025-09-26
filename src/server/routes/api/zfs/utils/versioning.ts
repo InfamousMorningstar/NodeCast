@@ -266,10 +266,24 @@ export async function compareVersions(req: FastifyRequest, res: FastifyReply) {
 
 // Default export for route registration
 export default async function (fastify: any) {
-  // Register routes
-  fastify.post('/snapshots', createSnapshot);
-  fastify.get('/snapshots', listSnapshots);
-  fastify.get('/file-versions', getFileVersions);
-  fastify.post('/restore', restoreFile);
-  fastify.post('/compare', compareVersions);
+  // Check if ZFS features are disabled
+  const zfsEnabled = process.env.ZFS_ENABLED !== 'false';
+  const zfsRoutesDisabled = process.env.DISABLE_ZFS_ROUTES === 'true';
+  
+  if (!zfsEnabled || zfsRoutesDisabled) {
+    logger.info('ZFS routes disabled via environment variables');
+    return;
+  }
+
+  // Register routes only if ZFS is enabled
+  try {
+    fastify.post('/snapshots', createSnapshot);
+    fastify.get('/snapshots', listSnapshots);
+    fastify.get('/file-versions', getFileVersions);
+    fastify.post('/restore', restoreFile);
+    fastify.post('/compare', compareVersions);
+    logger.info('ZFS routes registered successfully');
+  } catch (error) {
+    logger.error('Failed to register ZFS routes:', { error: String(error) });
+  }
 }
